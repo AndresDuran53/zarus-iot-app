@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="zarus_background">#FF1D1D1D</color>
+    <color name="zarus_gray">#FF707070</color>
+    <color name="zarus_text_light">#FFDADADA</color>
+    <color name="zarus_text_muted">#FF707070</color>
+    <color name="zarus_green">#FF00A69C</color>
+    <color name="zarus_complement_green">#FF0C9981</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+</resources>
