@@ -1,4 +1,4 @@
-package com.example.zarusiot.model;
+package com.example.zarusiot.data.model;
 
 public class IotDeviceListItem {
     private String tittle;

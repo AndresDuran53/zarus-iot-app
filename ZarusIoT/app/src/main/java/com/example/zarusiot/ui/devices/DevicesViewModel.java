@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.zarusiot.model.IotDevice;
+import com.example.zarusiot.data.model.IotDevice;
 
 import java.util.ArrayList;
 import java.util.List;

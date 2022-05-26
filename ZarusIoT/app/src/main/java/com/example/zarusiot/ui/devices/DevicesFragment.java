@@ -28,7 +28,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.zarusiot.R;
-import com.example.zarusiot.model.IotDevice;
+import com.example.zarusiot.data.model.IotDevice;
 import com.example.zarusiot.databinding.FragmentDevicesBinding;
 import com.example.zarusiot.ui.DiscoveredListViewItemAdapter;
 import com.example.zarusiot.ui.home.HomeViewModel;

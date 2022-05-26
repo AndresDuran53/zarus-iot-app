@@ -9,8 +9,8 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="$USER_HOME$/Projects/Git/Andres/zarus-iot-app/ZarusIoT" />
+            <option value="$USER_HOME$/Projects/Git/Andres/zarus-iot-app/ZarusIoT/app" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

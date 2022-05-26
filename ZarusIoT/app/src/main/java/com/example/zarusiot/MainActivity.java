@@ -11,6 +11,7 @@ import android.widget.ListView;
 import com.example.zarusiot.ui.devices.DevicesFragment;
 import com.example.zarusiot.ui.devices.DevicesViewModel;
 import com.example.zarusiot.ui.home.HomeViewModel;
+import com.example.zarusiot.ui.login.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -51,7 +52,12 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(binding.navView, navController);
 
-
-
     }
+
+    /** Called when the user taps the Send button */
+    public void openLogInActivity(View view) {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
 }
