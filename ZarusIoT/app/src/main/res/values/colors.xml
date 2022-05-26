@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="zarus_background">#FF1D1D1D</color>
+    <color name="zarus_background">#FF111111</color>
     <color name="zarus_gray">#FF707070</color>
     <color name="zarus_text_light">#FFDADADA</color>
     <color name="zarus_text_muted">#FF707070</color>

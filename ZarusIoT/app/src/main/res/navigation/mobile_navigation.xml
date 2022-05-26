@@ -14,8 +14,9 @@
     <fragment
         android:id="@+id/navigation_dashboard"
         android:name="com.example.zarusiot.ui.devices.DevicesFragment"
+        android:background="#FFFFFF"
         android:label="@string/title_devices"
-        tools:layout="@layout/fragment_devices" />
+    tools:layout="@layout/fragment_devices" />
 
     <fragment
         android:id="@+id/navigation_notifications"

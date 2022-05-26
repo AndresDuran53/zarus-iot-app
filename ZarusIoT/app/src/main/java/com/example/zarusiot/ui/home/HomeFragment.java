@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -52,9 +53,14 @@ public class HomeFragment extends Fragment {
     private void updateListView(List<IotDevice> iotDevices){
 
         ListView listView = binding.getRoot().findViewById(R.id.listView);
+
+        TextView noDevicesText = binding.getRoot().findViewById(R.id.noDevicesTextView);
+        if(iotDevices.size()==0){
+            noDevicesText.setVisibility(View.VISIBLE);
+            //iotDevices.add(new IotDevice("Test Device","TypeTest","0.0.0.0"));
+        } else noDevicesText.setVisibility(View.INVISIBLE);
+
         ListViewItemAdapter listViewItemAdapter = new ListViewItemAdapter(requireActivity(),iotDevices);
-
-
         listView.setAdapter(listViewItemAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
