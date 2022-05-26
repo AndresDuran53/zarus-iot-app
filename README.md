@@ -1,4 +1,4 @@
-# Zarus Iot Android App
+# Zarus Iot Android App (WIP)
 
 The purpose of this application is to facilitate the discovery and connections to the iot devices developed by Zarus and its derived codes.
 
