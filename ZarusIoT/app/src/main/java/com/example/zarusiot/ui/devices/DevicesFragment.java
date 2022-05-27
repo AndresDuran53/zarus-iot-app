@@ -150,7 +150,6 @@ public class DevicesFragment extends Fragment {
                         }
                     }
                 });
-                final Button buttonScanNetwork = binding.buttonScanNetwork;
                 if(iotDeviceDiscoveredList.size()>0)
                     devicesViewModel.setActionsText(iotDeviceDiscoveredList.size()+" Devices found.");
                 else if(!devicesViewModel.isSearching() &&
