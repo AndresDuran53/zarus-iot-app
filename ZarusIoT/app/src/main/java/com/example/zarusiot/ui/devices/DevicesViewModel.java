@@ -12,6 +12,7 @@ import java.util.List;
 public class DevicesViewModel extends ViewModel {
 
     private final MutableLiveData<List<IotDevice>> discoveredIotDeviceList;
+    private boolean searching;
 
     public DevicesViewModel() {
         discoveredIotDeviceList = new MutableLiveData<>();
@@ -20,6 +21,15 @@ public class DevicesViewModel extends ViewModel {
 
     public LiveData<List<IotDevice>> getDiscoveredIotDeviceList() {
         return discoveredIotDeviceList;
+    }
+
+
+    public boolean isSearching() {
+        return searching;
+    }
+
+    public void setSearching(boolean state){
+        searching = state;
     }
 
     public void setDiscoveredIotDeviceList(List<IotDevice> pStoredIotDeviceList) {

@@ -18,6 +18,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import org.json.JSONException;
@@ -49,6 +51,8 @@ public class DevicesFragment extends Fragment {
     private FragmentDevicesBinding binding;
     private WifiManager wifiManager;
     private List<IotDevice> iotDeviceDiscoveredList;
+    private FragmentActivity fragmentActivity;
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -59,15 +63,19 @@ public class DevicesFragment extends Fragment {
 
         binding = FragmentDevicesBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        Context applicationContext = getActivity().getApplicationContext();
+        fragmentActivity = getActivity();
+        Context applicationContext = fragmentActivity.getApplicationContext();
         wifiManager = (WifiManager)applicationContext.getSystemService(WIFI_SERVICE);
         iotDeviceDiscoveredList = new ArrayList<>();
         devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
+        setButtonState(!devicesViewModel.isSearching());
+
         final View button = root.findViewById(R.id.buttonScanNetwork);
         button.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        devicesViewModel.setSearching(true);
                         setButtonState(false);
                         iotDeviceDiscoveredList.clear();
                         devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
@@ -82,6 +90,7 @@ public class DevicesFragment extends Fragment {
                             public void onFinished(ArrayList<Device> devicesFound) {
                                 // Stub: Finished scanning
                                 saveToIotDevicesList(devicesFound);
+                                devicesViewModel.setSearching(false);
                             }
                         });
                     }
@@ -243,27 +252,36 @@ public class DevicesFragment extends Fragment {
                 });
                 if(iotDeviceDiscoveredList.size()>0) setText(iotDeviceDiscoveredList.size()+" Devices found.");
                 else setText("No Devices Found.");
+                setButtonState(!devicesViewModel.isSearching());
             }
         });
     }
 
     private void setText(String text){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final TextView textView = binding.textTest;
-                textView.setText(text);
-            }
-        });
+        try{
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final TextView textView = binding.textTest;
+                    textView.setText(text);
+                }
+            });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void setButtonState(boolean state){
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                final Button buttonScanNetwork = binding.buttonScanNetwork;
-                buttonScanNetwork.setEnabled(state);
-            }
-        });
+        try{
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    final Button buttonScanNetwork = binding.buttonScanNetwork;
+                    buttonScanNetwork.setEnabled(state);
+                }
+            });
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

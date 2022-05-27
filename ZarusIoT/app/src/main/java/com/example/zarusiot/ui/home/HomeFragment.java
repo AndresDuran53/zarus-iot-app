@@ -36,8 +36,6 @@ public class HomeFragment extends Fragment {
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        //final TextView textView = binding.textHome;
-
         homeViewModel.getStoredIotDeviceList().observe(getViewLifecycleOwner(), new Observer<List<IotDevice>>() {
             @Override
             public void onChanged(List<IotDevice> iotDevices) {
