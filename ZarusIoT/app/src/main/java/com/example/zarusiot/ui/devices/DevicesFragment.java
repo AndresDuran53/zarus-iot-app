@@ -188,14 +188,6 @@ public class DevicesFragment extends Fragment {
                 }
             });
         } catch (Exception e){
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-
-                @Override
-                public void run() {
-                    //Your UI code here
-                }
-            });
             e.printStackTrace();
         }
     }
