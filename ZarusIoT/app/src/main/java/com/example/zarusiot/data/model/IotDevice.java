@@ -1,5 +1,9 @@
 package com.example.zarusiot.data.model;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 import java.util.List;
 
 public class IotDevice {
@@ -54,6 +58,20 @@ public class IotDevice {
         this.added = added;
     }
 
+    public static IotDevice fromJson(String json,String ip){
+        try {
+            String[] deviceSSIDValues = new JSONObject(json)
+                    .getString("deviceSSID")
+                    .split("-",0);
+            String nameAux = deviceSSIDValues[2];
+            String typeAux = deviceSSIDValues[0]+"-"+deviceSSIDValues[1];
+            return new IotDevice(nameAux, typeAux, ip);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static int searchIndexIotDeviceByIp(List<IotDevice> iotDeviceList, String ip){
         for (int i=0; i<iotDeviceList.size(); i++){
             if(iotDeviceList.get(i).getIp().equals(ip)) return i;
@@ -80,5 +98,20 @@ public class IotDevice {
         }
         return false;
     }
+
+    public static boolean validZarusDeviceResponse(String response){
+        try {
+            String deviceSSID = new JSONObject(response).getString("deviceSSID");
+            String[] deviceSSIDValues = deviceSSID.split("-",0);
+            return deviceSSIDValues.length>=3;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        } catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }
 

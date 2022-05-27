@@ -1,9 +1,8 @@
 package com.example.zarusiot.data;
 
-import com.example.zarusiot.controller.ZarusRequest;
+import com.example.zarusiot.component.ZarusRequest;
 import com.example.zarusiot.data.model.LoggedInUser;
 
-import java.io.DataInput;
 import java.io.IOException;
 
 import javax.security.auth.login.LoginException;

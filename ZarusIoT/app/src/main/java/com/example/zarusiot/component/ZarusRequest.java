@@ -1,4 +1,4 @@
-package com.example.zarusiot.controller;
+package com.example.zarusiot.component;
 
 public class ZarusRequest {
     private final String URL = "zarus.dev";

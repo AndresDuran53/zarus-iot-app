@@ -31,6 +31,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     public void addToIotDeviceList(IotDevice iotDevice) {
+        System.out.println("Adding device");
         if(!deviceAlreadyAdded(iotDevice))
         this.storedIotDeviceList.getValue().add(iotDevice);
     }

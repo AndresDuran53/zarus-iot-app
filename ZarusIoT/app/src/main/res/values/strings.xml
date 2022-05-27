@@ -10,6 +10,9 @@
     <string name="already_added">Already added</string>
     <string name="title_activity_new_device">NewDeviceActivity</string>
     <string name="search_for_network_devices">Search for network devices</string>
+    <string name="scanning_all_devices">Scanning all devices...</string>
+    <string name="looking_zarus_devices">Looking for Zarus devices...</string>
+    <string name="no_device_found">No Devices Found.</string>
     <string name="scan_Network">Scan Network</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
