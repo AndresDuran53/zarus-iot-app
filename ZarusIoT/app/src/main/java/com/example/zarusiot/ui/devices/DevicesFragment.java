@@ -105,7 +105,6 @@ public class DevicesFragment extends Fragment {
 
     private void validatingZarusDevice(List<Device> devicesFound){
         if(devicesFound.size()!=0){
-            setText("looking_zarus_devices");
             List<String> listIp = devicesFound.stream().map(device -> device.ip).collect(Collectors.toList());
             httpRequest.callGetListRequests(listIp,
                     IotDevice::validZarusDeviceResponse,
