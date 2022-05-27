@@ -20,4 +20,7 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
+    <string name="no_devices_stored">There is no devices addded yet.</string>
+    <string name="brand_new_textview">Are you connecting to a brand new device? \n Turn on the device and click here to search.</string>
+    <string name="brand_new_button">Search new device</string>
 </resources>

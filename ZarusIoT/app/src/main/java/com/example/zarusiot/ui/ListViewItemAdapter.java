@@ -8,6 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.zarusiot.R;
+import com.example.zarusiot.data.IoTDeviceType;
 import com.example.zarusiot.data.model.IotDevice;
 
 import java.util.List;
@@ -43,8 +44,11 @@ public class ListViewItemAdapter extends BaseAdapter {
         TextView title = (TextView) view.findViewById(R.id.iotTitle);
         TextView subTitle = (TextView) view.findViewById(R.id.iotSubTitle);
 
+        IoTDeviceType ioTDeviceType = IoTDeviceType.findByValue(iotDevice.getType());
+        String type = ioTDeviceType.getName();
+
         title.setText(iotDevice.getName());
-        subTitle.setText(iotDevice.getType()+" | "+iotDevice.getIp());
+        subTitle.setText(type+" | "+iotDevice.getIp());
 
         return view;
     }

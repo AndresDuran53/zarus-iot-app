@@ -56,8 +56,8 @@ public class HomeFragment extends Fragment {
 
         TextView noDevicesText = binding.getRoot().findViewById(R.id.noDevicesTextView);
         if(iotDevices.size()==0){
-            noDevicesText.setVisibility(View.VISIBLE);
             //iotDevices.add(new IotDevice("Test Device","TypeTest","0.0.0.0"));
+            noDevicesText.setVisibility(View.VISIBLE);
         } else noDevicesText.setVisibility(View.INVISIBLE);
 
         ListViewItemAdapter listViewItemAdapter = new ListViewItemAdapter(requireActivity(),iotDevices);

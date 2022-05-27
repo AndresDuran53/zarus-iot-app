@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -67,6 +68,7 @@ public class DevicesFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        setButtonState(false);
                         iotDeviceDiscoveredList.clear();
                         devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
                         setText("Scanning all devices...");
@@ -165,9 +167,9 @@ public class DevicesFragment extends Fragment {
                 callGetRequests(device.ip);
             }
             /**/
-            devicesfound++;
 
-            /*String nameAux = "Name:"+device.ip;
+            /*devicesfound++;
+            String nameAux = "Name:"+device.ip;
             String typeAux = "Type:"+device.ip;
             IotDevice iotDeviceAux = new IotDevice(nameAux, typeAux, device.ip);
             boolean deviceAlreadyStored = homeViewModel.deviceAlreadyAdded(iotDeviceAux);
@@ -187,6 +189,7 @@ public class DevicesFragment extends Fragment {
             /**/
         }
         if(devicesfound==0) setText("No Devices Found.");
+        setButtonState(true);
     }
 
     // Deprecated of formatIpAddress() because the function doesn't support ipv6
@@ -250,6 +253,16 @@ public class DevicesFragment extends Fragment {
             public void run() {
                 final TextView textView = binding.textTest;
                 textView.setText(text);
+            }
+        });
+    }
+
+    private void setButtonState(boolean state){
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                final Button buttonScanNetwork = binding.buttonScanNetwork;
+                buttonScanNetwork.setEnabled(state);
             }
         });
     }
