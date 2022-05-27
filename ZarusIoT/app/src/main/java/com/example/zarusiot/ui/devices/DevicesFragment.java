@@ -105,7 +105,6 @@ public class DevicesFragment extends Fragment {
 
     private void validatingZarusDevice(List<Device> devicesFound){
         if(devicesFound.size()!=0){
-            //devicesViewModel.setActionsText("looking_zarus_devices");
             setText("looking_zarus_devices");
             List<String> listIp = devicesFound.stream().map(device -> device.ip).collect(Collectors.toList());
             httpRequest.callGetListRequests(listIp,
@@ -154,8 +153,11 @@ public class DevicesFragment extends Fragment {
                 final Button buttonScanNetwork = binding.buttonScanNetwork;
                 if(iotDeviceDiscoveredList.size()>0)
                     devicesViewModel.setActionsText(iotDeviceDiscoveredList.size()+" Devices found.");
-                else
+                else if(!devicesViewModel.isSearching() &&
+                       !devicesViewModel.getActionsText().getValue().equals(
+                               fragmentActivity.getString(R.string.search_for_network_devices))){
                     devicesViewModel.setActionsText(fragmentActivity.getString(R.string.no_device_found));
+                }
                 setButtonState(!devicesViewModel.isSearching());
             }
         });

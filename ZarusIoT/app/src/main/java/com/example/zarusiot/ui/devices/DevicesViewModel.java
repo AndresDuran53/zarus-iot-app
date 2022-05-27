@@ -32,7 +32,7 @@ public class DevicesViewModel extends ViewModel {
     }
 
     public void setActionsText(String value){
-        actionsText.postValue(value);
+        actionsText.setValue(value);
     }
 
     public boolean isSearching() {
