@@ -67,6 +67,8 @@ public class IotDevice {
             return new IotDevice(nameAux, typeAux, ip);
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e){
+            e.printStackTrace();
         }
         return null;
     }

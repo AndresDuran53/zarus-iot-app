@@ -30,8 +30,7 @@ public class HomeFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
@@ -44,7 +43,6 @@ public class HomeFragment extends Fragment {
         });
 
         updateListView(new ArrayList<>());
-
         return root;
     }
 
@@ -54,7 +52,6 @@ public class HomeFragment extends Fragment {
 
         TextView noDevicesText = binding.getRoot().findViewById(R.id.noDevicesTextView);
         if(iotDevices.size()==0){
-            //iotDevices.add(new IotDevice("Test Device","TypeTest","0.0.0.0"));
             noDevicesText.setVisibility(View.VISIBLE);
         } else noDevicesText.setVisibility(View.INVISIBLE);
 

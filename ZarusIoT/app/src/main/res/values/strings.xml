@@ -32,5 +32,9 @@
     <string name="turn_on_wifi">You are not connected to the WiFi\nConnect to you WiFi to find devices.</string>
     <string name="search_zarus_wifi">Search Zarus WiFi.</string>
     <string name="refresh">Refresh</string>
+    <string name="prompt_login">Login</string>
+    <string name="sending_configuration">Sending Configuration...</string>
+    <string name="devices_found">Devices found.</string>
+
 
 </resources>

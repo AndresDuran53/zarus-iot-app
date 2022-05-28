@@ -66,9 +66,10 @@ public class DevicesFragment extends Fragment {
         View root = binding.getRoot();
         fragmentActivity = getActivity();
 
-        networkScan = new NetworkScan(false);
+        networkScan = new NetworkScan();
         httpRequest = new HttpRequest(getContext());
 
+        //UI objects
         textWarningNoWifi = binding.warningNoWifi;
         listViewDevices = binding.listViewDevices;
         textActionHeader = binding.textViewActionHeader;
@@ -81,40 +82,33 @@ public class DevicesFragment extends Fragment {
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         devicesViewModel = new ViewModelProvider(requireActivity()).get(DevicesViewModel.class);
         iotDeviceDiscoveredList = devicesViewModel.getDiscoveredIotDeviceList().getValue();
-        if(devicesViewModel.getActionsText().getValue().equals("")) devicesViewModel.setActionsText(getString(R.string.search_for_network_devices));
+        if(devicesViewModel.getActionsText().getValue().equals("")){
+            devicesViewModel.setActionsText(getString(R.string.search_for_network_devices));
+        }
         devicesViewModel.setScanNetworkEnable(!devicesViewModel.isSearching());
 
-        devicesViewModel.getActionsText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        devicesViewModel.getActionsText().observe(getViewLifecycleOwner(),
+                new Observer<String>() {
             @Override
             public void onChanged(String value) {
                 textActionHeader.setText(value);
             }
         });
 
-        devicesViewModel.getScanNetworkEnable().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+        devicesViewModel.getScanNetworkEnable().observe(getViewLifecycleOwner(),
+                new Observer<Boolean>() {
             @Override
             public void onChanged(Boolean state) {
                 buttonScanNetwork.setEnabled(Boolean.valueOf(state));
             }
         });
 
+        //Setting OnClick actions
         buttonScanNetwork.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(isConnectedWifi()){
-                            try{
-                                devicesViewModel.setSearching(true);
-                                devicesViewModel.setScanNetworkEnable(false);
-                                iotDeviceDiscoveredList.clear();
-                                updateListView();
-                                devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
-                                devicesViewModel.setActionsText(getString(R.string.scanning_all_devices));
-                                networkScan.scanNetworkDevices((devicesFound) -> validatingZarusDevice(devicesFound));
-                            }catch (Exception e){
-                                devicesViewModel.setActionsText("Error: "+e.getMessage());
-                            }
-                        } else updateUiByConnectionWiFi(false);
+                        StartScanningNetwork();
                     }
                 }
         );
@@ -136,6 +130,8 @@ public class DevicesFragment extends Fragment {
             }
         });
 
+
+        //Register Activity on Result
         wifiScanActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
@@ -153,6 +149,23 @@ public class DevicesFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void StartScanningNetwork(){
+        if(isConnectedWifi()){
+            try{
+                devicesViewModel.setSearching(true);
+                devicesViewModel.setScanNetworkEnable(false);
+                iotDeviceDiscoveredList.clear();
+                updateListView();
+                devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
+                devicesViewModel.setActionsText(getString(R.string.scanning_all_devices));
+                networkScan.scanNetworkDevices((devicesFound) -> validatingZarusDevice(devicesFound));
+            }catch (Exception e){
+                devicesViewModel.setSearching(false);
+                devicesViewModel.setScanNetworkEnable(true);
+            }
+        } else updateUiByConnectionWiFi(false);
     }
 
     private void updateUiByConnectionWiFi(Boolean isConnectedWifi){
@@ -202,7 +215,6 @@ public class DevicesFragment extends Fragment {
     }
 
     public void saveToIotDevicesList(String ip,String response){
-        //TRY HERE
         IotDevice iotDeviceAux = IotDevice.fromJson(response,ip);
         boolean deviceAlreadyStored = homeViewModel.deviceAlreadyAdded(iotDeviceAux);
         IotDevice.addToListIfNotDuplicated(iotDeviceDiscoveredList,iotDeviceAux);
@@ -220,34 +232,45 @@ public class DevicesFragment extends Fragment {
         fragmentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                updateUiByConnectionWiFi(isConnectedWifi());
-                ListView listView = DevicesFragment.binding.getRoot().findViewById(R.id.listViewDevices);
 
-                DiscoveredListViewItemAdapter discoveredListViewItemAdapter = new DiscoveredListViewItemAdapter(fragmentActivity, iotDeviceDiscoveredList);
+                updateUiByConnectionWiFi(isConnectedWifi());
+                ListView listView =
+                        DevicesFragment.binding.getRoot().findViewById(R.id.listViewDevices);
+
+                DiscoveredListViewItemAdapter discoveredListViewItemAdapter =
+                        new DiscoveredListViewItemAdapter(fragmentActivity, iotDeviceDiscoveredList);
+
                 listView.setAdapter(discoveredListViewItemAdapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                        IotDevice iotDevice = iotDeviceDiscoveredList.get(position);
-                        if(!iotDevice.isAdded()){
-                            iotDevice.setAdded(true);
-                            TextView addText = (TextView) view.findViewById(R.id.discoveredIotAdd);;
-                            addText.setText(R.string.already_added);
-                            addText.setTextColor(ContextCompat.getColor(getContext(), R.color.zarus_text_muted));
-                            homeViewModel.addToIotDeviceList(iotDevice);
-                        }
+                        onClickDeviceDiscovered(view, position);
                     }
                 });
-                if(iotDeviceDiscoveredList.size()>0)
-                    devicesViewModel.setActionsText(iotDeviceDiscoveredList.size()+" Devices found.");
+
+                if(iotDeviceDiscoveredList.size()>0){
+                    String message = iotDeviceDiscoveredList.size()+" "+getString(R.string.devices_found);
+                    devicesViewModel.setActionsText(message);
+                }
                 else if(!devicesViewModel.isSearching() &&
-                       !devicesViewModel.getActionsText().getValue().equals(
+                        !devicesViewModel.getActionsText().getValue().equals(
                                fragmentActivity.getString(R.string.search_for_network_devices))){
                     devicesViewModel.setActionsText(fragmentActivity.getString(R.string.no_device_found));
                 }
                 devicesViewModel.setScanNetworkEnable(!devicesViewModel.isSearching());
             }
         });
+    }
+
+    private void onClickDeviceDiscovered(View view, int position) {
+        IotDevice iotDevice = iotDeviceDiscoveredList.get(position);
+        if(!iotDevice.isAdded()){
+            iotDevice.setAdded(true);
+            TextView addText = (TextView) view.findViewById(R.id.discoveredIotAdd);;
+            addText.setText(R.string.already_added);
+            addText.setTextColor(ContextCompat.getColor(getContext(), R.color.zarus_text_muted));
+            homeViewModel.addToIotDeviceList(iotDevice);
+        }
     }
 
 }

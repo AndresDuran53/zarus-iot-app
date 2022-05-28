@@ -12,6 +12,7 @@ import com.example.zarusiot.component.HttpRequest;
 
 public class ConfigurationDeviceActivity extends AppCompatActivity {
 
+    private final String IP_LOCAL = "192.168.4.1";
     private HttpRequest httpRequest;
 
     @Override
@@ -26,14 +27,11 @@ public class ConfigurationDeviceActivity extends AppCompatActivity {
         EditText editPass = (EditText) findViewById(R.id.edit_text_password);
         String ssid = editSsid.getText().toString();
         String pass = editPass.getText().toString();
-
-        Toast.makeText(getApplicationContext(), "Sending...", Toast.LENGTH_SHORT).show();
-        httpRequest.sendDeviceWiFiConfiguration("192.168.4.1",ssid,pass,
+        String message = getString(R.string.sending_configuration);
+        Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+        httpRequest.sendDeviceWiFiConfiguration(IP_LOCAL,ssid,pass,
                 (x)-> true,
-                (ip,response)-> {
-                    Toast.makeText(getApplicationContext(), ip+" : "+response, Toast.LENGTH_SHORT).show();
-            return;
-        });
+                (ip,response)-> {return;});
         finish();
     }
 }

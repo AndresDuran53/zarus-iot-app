@@ -14,8 +14,8 @@ import java.util.stream.Collectors;
 public class NetworkScan {
     private boolean scanningStarted;
 
-    public NetworkScan(boolean scanningStarted){
-        this.scanningStarted = scanningStarted;
+    public NetworkScan(){
+        this.scanningStarted = false;
     }
 
     public boolean isScanningStarted() {
