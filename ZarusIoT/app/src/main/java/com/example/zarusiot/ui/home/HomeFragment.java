@@ -64,7 +64,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 String deviceIp = iotDevices.get(position).getIp();
-                Uri uri = Uri.parse("http://"+deviceIp); // missing 'http://' will cause crashed
+                Uri uri = Uri.parse("http://"+deviceIp);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }

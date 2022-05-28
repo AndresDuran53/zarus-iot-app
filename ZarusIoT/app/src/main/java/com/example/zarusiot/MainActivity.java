@@ -60,10 +60,15 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /** Called when the user taps the Send button */
     public void openLogInActivity(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
+    }
+
+    public void openWiFiScannerActivity(View view){
+        Intent intent = new Intent(this, WifiScannerActivity.class);
+        startActivity(intent);
+
     }
 
 }
