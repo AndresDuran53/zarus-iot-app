@@ -21,6 +21,9 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:icon, android:theme, android:usesCleartextTraffic">
         <activity
+            android:name=".ConfigurationDeviceActivity"
+            android:exported="false" />
+        <activity
             android:name=".WifiScannerActivity"
             android:exported="false" />
         <activity

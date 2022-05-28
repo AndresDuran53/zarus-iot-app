@@ -115,6 +115,7 @@ public class DevicesFragment extends Fragment {
     }
 
     public void saveToIotDevicesList(String ip,String response){
+        //TRY HERE
         IotDevice iotDeviceAux = IotDevice.fromJson(response,ip);
         boolean deviceAlreadyStored = homeViewModel.deviceAlreadyAdded(iotDeviceAux);
         IotDevice.addToListIfNotDuplicated(iotDeviceDiscoveredList,iotDeviceAux);

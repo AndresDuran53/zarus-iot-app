@@ -23,7 +23,10 @@
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="no_devices_stored">There is no devices addded yet.\nGo to the tab Devices to add devices.</string>
+    <string name="no_devices_stored">There is no devices addded yet.\nGo to the Devices tab to add devices.</string>
     <string name="brand_new_textview">Are you connecting to a brand new device? \n Turn on the device and click here to search.</string>
     <string name="brand_new_button">Search new device</string>
+    <string name="text_config_device">Insert your Wifi Configuration</string>
+    <string name="prompt_ssid_wifi">SSID (WiFi Name)</string>
+    <string name="prompt_button_send_configuration">Save Configuration</string>
 </resources>

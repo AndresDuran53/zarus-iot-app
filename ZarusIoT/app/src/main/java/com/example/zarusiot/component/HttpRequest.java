@@ -27,19 +27,33 @@ public class HttpRequest {
         this.context = context;
     }
 
-    public void callGetRequests(String ip,
+    public void callGetListRequests(List<String> listIps,
+                                    Function<String,Boolean> validateResponse,
+                                    BiConsumer<String,String> callback){
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(context);
+        listIps.stream().forEach(ip->{
+            String url ="http://"+ip+"/getRedInformation";
+            addToQueue(ip, validateResponse, callback, queue, url);
+        });
+    }
+
+    public void sendDeviceWiFiConfiguration(String ip, String ssid, String pass,
                                 Function<String,Boolean> validateResponse,
                                 BiConsumer<String,String> callback){
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url ="http://"+ip+"/getRedInformation";
+        String url ="http://"+ip+"/setValues?rcsid="+ssid+"&rcpid="+pass;
+        addToQueue(ip, validateResponse, callback, queue, url);
 
-        // Request a string response from the provided URL.
+    }
+
+    private void addToQueue(String ip, Function<String, Boolean> validateResponse, BiConsumer<String, String> callback, RequestQueue queue, String url) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if(validateResponse.apply(response)) callback.accept(ip,response);
+                        if (validateResponse.apply(response)) callback.accept(ip, response);
                     }
                 }, new Response.ErrorListener() {
             @Override
@@ -49,32 +63,6 @@ public class HttpRequest {
         });
         // Add the request to the RequestQueue.
         queue.add(stringRequest);
-    }
-
-    public void callGetListRequests(List<String> listIps,
-                                    Function<String,Boolean> validateResponse,
-                                    BiConsumer<String,String> callback){
-        // Instantiate the RequestQueue.
-        RequestQueue queue = Volley.newRequestQueue(context);
-        listIps.stream().forEach(ip->{
-            String url ="http://"+ip+"/getRedInformation";
-            // Request a string response from the provided URL.
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            if(validateResponse.apply(response)) callback.accept(ip,response);
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    error.printStackTrace();
-                    //callback.accept(ip,"");
-                }
-            });
-            // Add the request to the RequestQueue.
-            queue.add(stringRequest);
-        });
     }
 
     // Deprecated of formatIpAddress() because the function doesn't support ipv6

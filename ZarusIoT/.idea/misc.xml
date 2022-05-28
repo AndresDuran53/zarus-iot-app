@@ -12,10 +12,12 @@
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/drawable/zarus_splash.xml" value="0.21354166666666666" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout-w1240dp/activity_login.xml" value="0.2282463186077644" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout-w936dp/activity_login.xml" value="0.23394808743169399" />
+        <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_configuration_device.xml" value="0.33" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_device.xml" value="0.30434782608695654" />
-        <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_login.xml" value="0.31023550724637683" />
+        <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_login.xml" value="0.33" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_main.xml" value="0.30434782608695654" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_splash.xml" value="0.19739583333333333" />
+        <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_web.xml" value="0.1640625" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/activity_wifi_scanner.xml" value="0.35520833333333335" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/custom_listview_item.xml" value="2.0" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/layout/custom_textview.xml" value="0.29846014492753625" />

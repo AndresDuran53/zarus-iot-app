@@ -1,11 +1,16 @@
 package com.example.zarusiot;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -50,6 +55,7 @@ public class WifiScannerActivity extends AppCompatActivity {
     private boolean searching;
     private Button buttonScan;
     private ListView listWifi;
+    private ConnectivityManager connectivityManager;
     private List<WiFiNetwork> wiFiNetworks = new ArrayList<>();
 
     @Override
@@ -198,17 +204,41 @@ public class WifiScannerActivity extends AppCompatActivity {
             networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
             networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
             networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_TRUSTED);
+            networkRequestBuilder.removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
             networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier);
             NetworkRequest networkRequest = networkRequestBuilder.build();
-            ConnectivityManager connectivityManager = (ConnectivityManager) getBaseContext().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            connectivityManager = (ConnectivityManager) getBaseContext().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
             if (connectivityManager != null) {
                 connectivityManager.requestNetwork(networkRequest, new ConnectivityManager.NetworkCallback() {
                     @Override
                     public void onAvailable(@NonNull Network network) {
                         super.onAvailable(network);
-                        Uri uri = Uri.parse("http://192.168.4.1");
-                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                        ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
+                                .bindProcessToNetwork(network);
+                        finish();
+                        Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
                         startActivity(intent);
+                        /*ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
+                                new ActivityResultContracts.StartActivityForResult(),
+                                new ActivityResultCallback<ActivityResult>() {
+                                    @Override
+                                    public void onActivityResult(ActivityResult result) {
+                                        if (result.getResultCode() == Activity.RESULT_OK) {
+                                            Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
+                                            if (connectivityManager != null) {
+                                                try{
+                                                    connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback(){
+
+                                                    });
+                                                }
+                                                catch (Exception e){
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        }
+                                    }
+                                });
+                        someActivityResultLauncher.launch(intent);*/
                     }
                 });
             }
