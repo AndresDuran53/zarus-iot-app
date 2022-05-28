@@ -30,4 +30,6 @@
     <string name="prompt_ssid_wifi">SSID (WiFi Name)</string>
     <string name="prompt_button_send_configuration">Save Configuration</string>
     <string name="turn_on_wifi">You are not connected to the WiFi\nConnect to you WiFi to find devices.</string>
+    <string name="search_zarus_wifi">Search Zarus WiFi.</string>
+
 </resources>

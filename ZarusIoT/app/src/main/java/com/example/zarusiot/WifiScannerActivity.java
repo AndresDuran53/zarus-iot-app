@@ -10,7 +10,6 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -20,7 +19,6 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
-import android.net.Uri;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiManager;
@@ -30,20 +28,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.zarusiot.data.model.WiFiNetwork;
-import com.example.zarusiot.ui.ListViewItemAdapter;
 import com.example.zarusiot.ui.ListViewWiFiItemAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class WifiScannerActivity extends AppCompatActivity {
 
@@ -57,6 +51,7 @@ public class WifiScannerActivity extends AppCompatActivity {
     private TextView messageTexView;
     private ListView listWifi;
     private ConnectivityManager connectivityManager;
+    private ConnectivityManager.NetworkCallback networkCallback;
     private List<WiFiNetwork> wiFiNetworks = new ArrayList<>();
     private ActivityResultLauncher<Intent> someActivityResultLauncher;
 
@@ -91,15 +86,30 @@ public class WifiScannerActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
-                        closeActivity();
+                        manageActivity(true);
                     }
                 });
+
+        networkCallback = new ConnectivityManager.NetworkCallback() {
+            @Override
+            public void onAvailable(@NonNull Network network) {
+                super.onAvailable(network);
+                ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
+                        .bindProcessToNetwork(network);
+                manageActivity(false);
+
+            }
+        };
     }
 
-    private void closeActivity(){
-        Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
-        if (connectivityManager != null) {
+    private void manageActivity(boolean openNewActivity){
+        if(openNewActivity){
+            Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
+            someActivityResultLauncher.launch(intent);
+        } else{
+            Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
             try{
+                final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback(){
 
                 });
@@ -107,6 +117,7 @@ public class WifiScannerActivity extends AppCompatActivity {
             catch (Exception e){
                 e.printStackTrace();
             }
+            finish();
         }
     }
 
@@ -207,6 +218,7 @@ public class WifiScannerActivity extends AppCompatActivity {
             wiFiNetworks.add(new WiFiNetwork(result.SSID,result.BSSID,result.capabilities));
         }
 
+        buttonScan.setEnabled(true);
         messageTexView.setText("");
         ListViewWiFiItemAdapter listViewItemAdapter = new ListViewWiFiItemAdapter(this,wiFiNetworks);
         listWifi.setAdapter(listViewItemAdapter);
@@ -245,9 +257,7 @@ public class WifiScannerActivity extends AppCompatActivity {
                         super.onAvailable(network);
                         ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
                                 .bindProcessToNetwork(network);
-                        finish();
                         Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
-                        //startActivity(intent);
                         someActivityResultLauncher.launch(intent);
                     }
                 });
