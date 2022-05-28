@@ -75,10 +75,12 @@ public class WifiScannerActivity extends AppCompatActivity {
         buttonScan = findViewById(R.id.buttonWiFiScan);
         messageTexView = findViewById(R.id.textViewWiFiScanner);
         messageTexView.setText("Press the button to find you new device.");
+        buttonScan.setEnabled(true);
         this.buttonScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 messageTexView.setText("Searching Device Networks...");
+                buttonScan.setEnabled(false);
                 searching = true;
                 requestsWifiPermission();
             }

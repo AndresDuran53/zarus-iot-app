@@ -3,6 +3,8 @@ package com.example.zarusiot.ui.devices;
 import static android.content.Context.WIFI_SERVICE;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -60,7 +62,7 @@ public class DevicesFragment extends Fragment {
         View root = binding.getRoot();
         fragmentActivity = getActivity();
 
-        networkScan = NetworkScan.getInstance();
+        networkScan = new NetworkScan(false);
         httpRequest = new HttpRequest(getContext());
 
         //Shared Data
@@ -93,6 +95,7 @@ public class DevicesFragment extends Fragment {
                     }
                 }
         );
+
         updateListView();
         return root;
     }
@@ -101,6 +104,43 @@ public class DevicesFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;
+    }
+
+    private void updateUiByConnectionWiFi(){
+        ConnectivityManager cm =
+                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+
+        if(!isConnected || !isWiFi){
+            TextView warningNoWifi = binding.warningNoWifi;
+            ListView listViewDevices = binding.listViewDevices;
+            TextView textTest = binding.textTest;
+            Button buttonScanNetwork = binding.buttonScanNetwork;
+            TextView textView2 = binding.textView2;
+            Button buttonScannerWifi = binding.buttonScannerWifi;
+            listViewDevices.setVisibility(View.INVISIBLE);
+            textTest.setVisibility(View.INVISIBLE);
+            buttonScanNetwork.setVisibility(View.INVISIBLE);
+            textView2.setVisibility(View.INVISIBLE);
+            buttonScannerWifi.setVisibility(View.INVISIBLE);
+            warningNoWifi.setVisibility(View.VISIBLE);
+        }
+        else{
+            TextView warningNoWifi = binding.warningNoWifi;
+            ListView listViewDevices = binding.listViewDevices;
+            TextView textTest = binding.textTest;
+            Button buttonScanNetwork = binding.buttonScanNetwork;
+            TextView textView2 = binding.textView2;
+            Button buttonScannerWifi = binding.buttonScannerWifi;
+            listViewDevices.setVisibility(View.VISIBLE);
+            textTest.setVisibility(View.VISIBLE);
+            buttonScanNetwork.setVisibility(View.VISIBLE);
+            textView2.setVisibility(View.VISIBLE);
+            buttonScannerWifi.setVisibility(View.VISIBLE);
+            warningNoWifi.setVisibility(View.INVISIBLE);
+        }
     }
 
     private void validatingZarusDevice(List<Device> devicesFound){
@@ -133,6 +173,7 @@ public class DevicesFragment extends Fragment {
         fragmentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                updateUiByConnectionWiFi();
                 ListView listView = DevicesFragment.binding.getRoot().findViewById(R.id.listViewDevices);
 
                 DiscoveredListViewItemAdapter discoveredListViewItemAdapter = new DiscoveredListViewItemAdapter(fragmentActivity, iotDeviceDiscoveredList);

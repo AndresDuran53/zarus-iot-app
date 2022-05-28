@@ -12,16 +12,10 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class NetworkScan {
-    private static NetworkScan networkScan;
     private boolean scanningStarted;
 
-    private NetworkScan(boolean scanningStarted){
+    public NetworkScan(boolean scanningStarted){
         this.scanningStarted = scanningStarted;
-    }
-
-    public static NetworkScan getInstance(){
-        if(networkScan==null) networkScan = new NetworkScan(false);
-        return networkScan;
     }
 
     public boolean isScanningStarted() {
