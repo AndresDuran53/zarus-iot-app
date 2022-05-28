@@ -3,7 +3,6 @@ package com.example.zarusiot.data.model;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class IotDevice {

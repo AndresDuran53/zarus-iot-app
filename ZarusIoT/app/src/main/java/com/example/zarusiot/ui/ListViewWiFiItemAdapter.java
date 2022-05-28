@@ -8,8 +8,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.example.zarusiot.R;
-import com.example.zarusiot.data.IoTDeviceType;
-import com.example.zarusiot.data.model.IotDevice;
 import com.example.zarusiot.data.model.WiFiNetwork;
 
 import java.util.List;

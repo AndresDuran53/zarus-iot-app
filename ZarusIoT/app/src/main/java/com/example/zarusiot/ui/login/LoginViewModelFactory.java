@@ -1,8 +1,8 @@
 package com.example.zarusiot.ui.login;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.annotation.NonNull;
 
 import com.example.zarusiot.data.LoginDataSource;
 import com.example.zarusiot.data.LoginRepository;

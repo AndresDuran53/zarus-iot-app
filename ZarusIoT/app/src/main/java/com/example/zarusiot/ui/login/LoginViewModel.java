@@ -1,15 +1,15 @@
 package com.example.zarusiot.ui.login;
 
+import android.util.Patterns;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import android.util.Patterns;
-
+import com.example.zarusiot.R;
 import com.example.zarusiot.data.LoginRepository;
 import com.example.zarusiot.data.Result;
 import com.example.zarusiot.data.model.LoggedInUser;
-import com.example.zarusiot.R;
 
 public class LoginViewModel extends ViewModel {
 

@@ -1,17 +1,7 @@
 package com.example.zarusiot.ui.login;
 
 import android.app.Activity;
-
-import androidx.activity.OnBackPressedCallback;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.os.Bundle;
-
-import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -23,9 +13,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.zarusiot.R;
-import com.example.zarusiot.ui.login.LoginViewModel;
-import com.example.zarusiot.ui.login.LoginViewModelFactory;
 import com.example.zarusiot.databinding.ActivityLoginBinding;
 
 public class LoginActivity extends AppCompatActivity {

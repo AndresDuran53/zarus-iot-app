@@ -15,10 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.zarusiot.ui.ListViewItemAdapter;
 import com.example.zarusiot.R;
-import com.example.zarusiot.databinding.FragmentHomeBinding;
 import com.example.zarusiot.data.model.IotDevice;
+import com.example.zarusiot.databinding.FragmentHomeBinding;
+import com.example.zarusiot.ui.ListViewItemAdapter;
 
 import java.util.ArrayList;
 import java.util.List;

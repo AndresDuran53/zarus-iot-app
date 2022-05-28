@@ -4,12 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
-import com.example.zarusiot.ui.WifiScannerActivity;
-import com.example.zarusiot.ui.devices.DevicesViewModel;
-import com.example.zarusiot.ui.home.HomeViewModel;
-import com.example.zarusiot.ui.login.LoginActivity;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.navigation.NavController;
@@ -18,6 +12,10 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.zarusiot.databinding.ActivityMainBinding;
+import com.example.zarusiot.ui.devices.DevicesViewModel;
+import com.example.zarusiot.ui.home.HomeViewModel;
+import com.example.zarusiot.ui.login.LoginActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class MainActivity extends AppCompatActivity {
 
