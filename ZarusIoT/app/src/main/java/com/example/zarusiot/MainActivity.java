@@ -7,6 +7,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.zarusiot.ui.devices.DevicesFragment;
 import com.example.zarusiot.ui.devices.DevicesViewModel;
@@ -14,6 +15,10 @@ import com.example.zarusiot.ui.home.HomeViewModel;
 import com.example.zarusiot.ui.login.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.ViewModelProvider;
@@ -68,7 +73,6 @@ public class MainActivity extends AppCompatActivity {
     public void openWiFiScannerActivity(View view){
         Intent intent = new Intent(this, WifiScannerActivity.class);
         startActivity(intent);
-
     }
 
 }

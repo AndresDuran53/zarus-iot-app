@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.17916666666666667" />
         <entry key="../../Android/Sdk/platforms/android-32/data/res/layout/simple_expandable_list_item_1.xml" value="0.19739583333333333" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.21354166666666666" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.21354166666666666" />

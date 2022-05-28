@@ -54,9 +54,11 @@ public class WifiScannerActivity extends AppCompatActivity {
     private WifiBroadcastReceiver wifiReceiver;
     private boolean searching;
     private Button buttonScan;
+    private TextView messageTexView;
     private ListView listWifi;
     private ConnectivityManager connectivityManager;
     private List<WiFiNetwork> wiFiNetworks = new ArrayList<>();
+    private ActivityResultLauncher<Intent> someActivityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,15 +73,40 @@ public class WifiScannerActivity extends AppCompatActivity {
         searching = false;
         listWifi = findViewById(R.id.listViewWifi);
         buttonScan = findViewById(R.id.buttonWiFiScan);
+        messageTexView = findViewById(R.id.textViewWiFiScanner);
+        messageTexView.setText("Press the button to find you new device.");
         this.buttonScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                messageTexView.setText("Searching Device Networks...");
                 searching = true;
                 requestsWifiPermission();
             }
         });
+
+        someActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        closeActivity();
+                    }
+                });
     }
 
+    private void closeActivity(){
+        Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
+        if (connectivityManager != null) {
+            try{
+                connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback(){
+
+                });
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
 
     private void requestsWifiPermission() {
         // With Android Level >= 23, you have to ask the user
@@ -178,6 +205,7 @@ public class WifiScannerActivity extends AppCompatActivity {
             wiFiNetworks.add(new WiFiNetwork(result.SSID,result.BSSID,result.capabilities));
         }
 
+        messageTexView.setText("");
         ListViewWiFiItemAdapter listViewItemAdapter = new ListViewWiFiItemAdapter(this,wiFiNetworks);
         listWifi.setAdapter(listViewItemAdapter);
         listWifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -217,28 +245,8 @@ public class WifiScannerActivity extends AppCompatActivity {
                                 .bindProcessToNetwork(network);
                         finish();
                         Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
-                        startActivity(intent);
-                        /*ActivityResultLauncher<Intent> someActivityResultLauncher = registerForActivityResult(
-                                new ActivityResultContracts.StartActivityForResult(),
-                                new ActivityResultCallback<ActivityResult>() {
-                                    @Override
-                                    public void onActivityResult(ActivityResult result) {
-                                        if (result.getResultCode() == Activity.RESULT_OK) {
-                                            Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
-                                            if (connectivityManager != null) {
-                                                try{
-                                                    connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback(){
-
-                                                    });
-                                                }
-                                                catch (Exception e){
-                                                    e.printStackTrace();
-                                                }
-                                            }
-                                        }
-                                    }
-                                });
-                        someActivityResultLauncher.launch(intent);*/
+                        //startActivity(intent);
+                        someActivityResultLauncher.launch(intent);
                     }
                 });
             }
