@@ -102,14 +102,15 @@ public class DevicesFragment extends Fragment {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(!isConnectedWifi()) return;
-                        devicesViewModel.setSearching(true);
-                        devicesViewModel.setScanNetworkEnable(false);
-                        iotDeviceDiscoveredList.clear();
-                        updateListView();
-                        devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
-                        devicesViewModel.setActionsText(getString(R.string.scanning_all_devices));
-                        networkScan.scanNetworkDevices((devicesFound) -> validatingZarusDevice(devicesFound));
+                        if(isConnectedWifi()){
+                            devicesViewModel.setSearching(true);
+                            devicesViewModel.setScanNetworkEnable(false);
+                            iotDeviceDiscoveredList.clear();
+                            updateListView();
+                            devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
+                            devicesViewModel.setActionsText(getString(R.string.scanning_all_devices));
+                            networkScan.scanNetworkDevices((devicesFound) -> validatingZarusDevice(devicesFound));
+                        } else updateUiByConnectionWiFi(false);
                     }
                 }
         );
@@ -117,9 +118,10 @@ public class DevicesFragment extends Fragment {
         buttonScannerWifi.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!isConnectedWifi()) return;
-                Intent intent = new Intent(getContext(), WifiScannerActivity.class);
-                wifiScanActivityResultLauncher.launch(intent);
+                if(isConnectedWifi()) {
+                    Intent intent = new Intent(getContext(), WifiScannerActivity.class);
+                    wifiScanActivityResultLauncher.launch(intent);
+                } else updateUiByConnectionWiFi(false);
             }
         });
 
@@ -152,15 +154,6 @@ public class DevicesFragment extends Fragment {
     private void updateUiByConnectionWiFi(Boolean isConnectedWifi){
         try{
             if(isConnectedWifi){
-                listViewDevices.setVisibility(View.INVISIBLE);
-                textActionHeader.setVisibility(View.INVISIBLE);
-                buttonScanNetwork.setVisibility(View.INVISIBLE);
-                textScanWifi.setVisibility(View.INVISIBLE);
-                buttonScannerWifi.setVisibility(View.INVISIBLE);
-                textWarningNoWifi.setVisibility(View.VISIBLE);
-                buttonRefresh.setVisibility(View.VISIBLE);
-            }
-            else{
                 listViewDevices.setVisibility(View.VISIBLE);
                 textActionHeader.setVisibility(View.VISIBLE);
                 buttonScanNetwork.setVisibility(View.VISIBLE);
@@ -168,6 +161,15 @@ public class DevicesFragment extends Fragment {
                 buttonScannerWifi.setVisibility(View.VISIBLE);
                 textWarningNoWifi.setVisibility(View.INVISIBLE);
                 buttonRefresh.setVisibility(View.INVISIBLE);
+            }
+            else{
+                listViewDevices.setVisibility(View.INVISIBLE);
+                textActionHeader.setVisibility(View.INVISIBLE);
+                buttonScanNetwork.setVisibility(View.INVISIBLE);
+                textScanWifi.setVisibility(View.INVISIBLE);
+                buttonScannerWifi.setVisibility(View.INVISIBLE);
+                textWarningNoWifi.setVisibility(View.VISIBLE);
+                buttonRefresh.setVisibility(View.VISIBLE);
             }
         }
         catch (Exception e){
@@ -179,10 +181,9 @@ public class DevicesFragment extends Fragment {
         ConnectivityManager cm =
                 (ConnectivityManager)fragmentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnectedWifi =
-                (activeNetwork != null && activeNetwork.isConnectedOrConnecting())
-                && (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI);
-        return isConnectedWifi;
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        return isConnected && isWiFi;
     }
 
     private void validatingZarusDevice(List<Device> devicesFound){
