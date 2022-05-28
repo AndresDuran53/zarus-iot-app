@@ -1,4 +1,4 @@
-package com.example.zarusiot;
+package com.example.zarusiot.ui;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.zarusiot.R;
 import com.example.zarusiot.component.HttpRequest;
 import com.example.zarusiot.ui.login.LoginActivity;
 

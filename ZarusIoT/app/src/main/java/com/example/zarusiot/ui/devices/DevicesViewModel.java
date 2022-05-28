@@ -14,6 +14,7 @@ public class DevicesViewModel extends ViewModel {
 
     private final MutableLiveData<List<IotDevice>> discoveredIotDeviceList;
     private final MutableLiveData<String> actionsText;
+    private final MutableLiveData<Boolean> scanNetworkEnable;
     private boolean searching;
 
     public DevicesViewModel() {
@@ -21,6 +22,8 @@ public class DevicesViewModel extends ViewModel {
         discoveredIotDeviceList.setValue(new ArrayList<>());
         actionsText = new MutableLiveData<>();
         actionsText.setValue("");
+        scanNetworkEnable = new MutableLiveData<>();
+        scanNetworkEnable.setValue(Boolean.FALSE);
     }
 
     public LiveData<List<IotDevice>> getDiscoveredIotDeviceList() {
@@ -42,6 +45,15 @@ public class DevicesViewModel extends ViewModel {
     public void setSearching(boolean state){
         searching = state;
     }
+
+    public MutableLiveData<Boolean> getScanNetworkEnable() {
+        return scanNetworkEnable;
+    }
+
+    public void setScanNetworkEnable(boolean state){
+        scanNetworkEnable.setValue(Boolean.valueOf(state));
+    }
+
 
     public void setDiscoveredIotDeviceList(List<IotDevice> pStoredIotDeviceList) {
         this.discoveredIotDeviceList.setValue(pStoredIotDeviceList);

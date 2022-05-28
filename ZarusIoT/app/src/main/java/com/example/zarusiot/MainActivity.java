@@ -3,34 +3,21 @@ package com.example.zarusiot;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.example.zarusiot.ui.devices.DevicesFragment;
+import com.example.zarusiot.ui.WifiScannerActivity;
 import com.example.zarusiot.ui.devices.DevicesViewModel;
 import com.example.zarusiot.ui.home.HomeViewModel;
 import com.example.zarusiot.ui.login.LoginActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.zarusiot.databinding.ActivityMainBinding;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,11 +54,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void openLogInActivity(View view) {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
-    }
-
-    public void openWiFiScannerActivity(View view){
-        Intent intent = new Intent(this, WifiScannerActivity.class);
         startActivity(intent);
     }
 

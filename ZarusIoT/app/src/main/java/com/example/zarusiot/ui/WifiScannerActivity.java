@@ -1,4 +1,4 @@
-package com.example.zarusiot;
+package com.example.zarusiot.ui;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
@@ -33,8 +33,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.zarusiot.R;
 import com.example.zarusiot.data.model.WiFiNetwork;
-import com.example.zarusiot.ui.ListViewWiFiItemAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,16 +44,14 @@ public class WifiScannerActivity extends AppCompatActivity {
     private static final String LOG_TAG = "AndroidExample";
     private static final int MY_REQUEST_CODE = 123;
     private WifiManager wifiManager;
-    private List<ScanResult> results;
     private WifiBroadcastReceiver wifiReceiver;
-    private boolean searching;
     private Button buttonScan;
     private TextView messageTexView;
     private ListView listWifi;
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
     private List<WiFiNetwork> wiFiNetworks = new ArrayList<>();
-    private ActivityResultLauncher<Intent> someActivityResultLauncher;
+    private ActivityResultLauncher<Intent> configActivityResultLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +63,6 @@ public class WifiScannerActivity extends AppCompatActivity {
         this.wifiReceiver = new WifiBroadcastReceiver();
         // Register the receiver
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
-        searching = false;
         listWifi = findViewById(R.id.listViewWifi);
         buttonScan = findViewById(R.id.buttonWiFiScan);
         messageTexView = findViewById(R.id.textViewWiFiScanner);
@@ -76,19 +73,9 @@ public class WifiScannerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 messageTexView.setText("Searching Device Networks...");
                 buttonScan.setEnabled(false);
-                searching = true;
                 requestsWifiPermission();
             }
         });
-
-        someActivityResultLauncher = registerForActivityResult(
-                new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        manageActivity(true);
-                    }
-                });
 
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
@@ -96,54 +83,47 @@ public class WifiScannerActivity extends AppCompatActivity {
                 super.onAvailable(network);
                 ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
                         .bindProcessToNetwork(network);
-                manageActivity(false);
-
             }
         };
-    }
 
-    private void manageActivity(boolean openNewActivity){
-        if(openNewActivity){
-            Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
-            someActivityResultLauncher.launch(intent);
-        } else{
-            Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
-            try{
-                final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback(){
-
+        configActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
+                        try{
+                            final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                            connectivityManager.unregisterNetworkCallback(networkCallback);
+                        }
+                        catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        finish();
+                    }
                 });
-            }
-            catch (Exception e){
-                e.printStackTrace();
-            }
-            finish();
-        }
     }
+
 
     private void requestsWifiPermission() {
-        // With Android Level >= 23, you have to ask the user
-        // for permission to Call.
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) { // 23
-            int permission1 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        int permission1 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
 
-            // Check for permissions
-            if (permission1 != PackageManager.PERMISSION_GRANTED) {
+        // Check for permissions
+        if (permission1 != PackageManager.PERMISSION_GRANTED) {
 
-                Log.d(LOG_TAG, "Requesting Permissions");
+            Log.d(LOG_TAG, "Requesting Permissions");
 
-                // Request permissions
-                ActivityCompat.requestPermissions(this,
-                        new String[]{
-                                Manifest.permission.ACCESS_COARSE_LOCATION,
-                                Manifest.permission.ACCESS_FINE_LOCATION,
-                                Manifest.permission.ACCESS_WIFI_STATE,
-                                Manifest.permission.ACCESS_NETWORK_STATE
-                        }, MY_REQUEST_CODE);
-                return;
-            }
-            Log.d(LOG_TAG, "Permissions Already Granted");
+            // Request permissions
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_WIFI_STATE,
+                            Manifest.permission.ACCESS_NETWORK_STATE
+                    }, MY_REQUEST_CODE);
+            return;
         }
+        Log.d(LOG_TAG, "Permissions Already Granted");
         this.doStartScanWifi();
     }
 
@@ -191,7 +171,6 @@ public class WifiScannerActivity extends AppCompatActivity {
     class WifiBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            searching = false;
             Log.d(LOG_TAG, "onReceive()");
 
             Toast.makeText(context, "Scan Complete!", Toast.LENGTH_SHORT).show();
@@ -258,7 +237,7 @@ public class WifiScannerActivity extends AppCompatActivity {
                         ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
                                 .bindProcessToNetwork(network);
                         Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
-                        someActivityResultLauncher.launch(intent);
+                        configActivityResultLauncher.launch(intent);
                     }
                 });
             }

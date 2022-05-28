@@ -21,10 +21,10 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:icon, android:theme, android:usesCleartextTraffic">
         <activity
-            android:name=".ConfigurationDeviceActivity"
+            android:name=".ui.ConfigurationDeviceActivity"
             android:exported="false" />
         <activity
-            android:name=".WifiScannerActivity"
+            android:name=".ui.WifiScannerActivity"
             android:exported="false" />
         <activity
             android:name=".ui.login.LoginActivity"

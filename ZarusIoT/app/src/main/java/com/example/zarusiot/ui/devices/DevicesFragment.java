@@ -1,14 +1,10 @@
 package com.example.zarusiot.ui.devices;
 
-import static android.content.Context.WIFI_SERVICE;
-
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +12,11 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -25,19 +24,16 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.example.zarusiot.R;
 import com.example.zarusiot.component.HttpRequest;
 import com.example.zarusiot.component.NetworkScan;
 import com.example.zarusiot.data.model.IotDevice;
 import com.example.zarusiot.databinding.FragmentDevicesBinding;
 import com.example.zarusiot.ui.DiscoveredListViewItemAdapter;
+import com.example.zarusiot.ui.WifiScannerActivity;
 import com.example.zarusiot.ui.home.HomeViewModel;
 import com.stealthcopter.networktools.subnet.Device;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +47,14 @@ public class DevicesFragment extends Fragment {
     private NetworkScan networkScan;
     private HttpRequest httpRequest;
     private List<IotDevice> iotDeviceDiscoveredList;
+    private TextView textWarningNoWifi;
+    private ListView listViewDevices;
+    private TextView textActionHeader;
+    private Button buttonScanNetwork;
+    private TextView textScanWifi;
+    private Button buttonScannerWifi;
+    private Button buttonRefresh;
+    private ActivityResultLauncher<Intent> wifiScanActivityResultLauncher;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -65,28 +69,42 @@ public class DevicesFragment extends Fragment {
         networkScan = new NetworkScan(false);
         httpRequest = new HttpRequest(getContext());
 
+        textWarningNoWifi = binding.warningNoWifi;
+        listViewDevices = binding.listViewDevices;
+        textActionHeader = binding.textViewActionHeader;
+        buttonScanNetwork = binding.buttonScanNetwork;
+        textScanWifi = binding.textViewScanWifi;
+        buttonScannerWifi = binding.buttonScannerWifi;
+        buttonRefresh = binding.buttonRefresh;
+
         //Shared Data
         homeViewModel = new ViewModelProvider(requireActivity()).get(HomeViewModel.class);
         devicesViewModel = new ViewModelProvider(requireActivity()).get(DevicesViewModel.class);
         iotDeviceDiscoveredList = devicesViewModel.getDiscoveredIotDeviceList().getValue();
         if(devicesViewModel.getActionsText().getValue().equals("")) devicesViewModel.setActionsText(getString(R.string.search_for_network_devices));
-        setButtonState(!devicesViewModel.isSearching());
+        devicesViewModel.setScanNetworkEnable(!devicesViewModel.isSearching());
 
         devicesViewModel.getActionsText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(String value) {
-                final TextView textView = binding.textTest;
-                textView.setText(value);
+                textActionHeader.setText(value);
             }
         });
 
-        final View button = root.findViewById(R.id.buttonScanNetwork);
-        button.setOnClickListener(
+        devicesViewModel.getScanNetworkEnable().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean state) {
+                buttonScanNetwork.setEnabled(Boolean.valueOf(state));
+            }
+        });
+
+        buttonScanNetwork.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        if(!isConnectedWifi()) return;
                         devicesViewModel.setSearching(true);
-                        setButtonState(false);
+                        devicesViewModel.setScanNetworkEnable(false);
                         iotDeviceDiscoveredList.clear();
                         updateListView();
                         devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
@@ -95,6 +113,31 @@ public class DevicesFragment extends Fragment {
                     }
                 }
         );
+
+        buttonScannerWifi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!isConnectedWifi()) return;
+                Intent intent = new Intent(getContext(), WifiScannerActivity.class);
+                wifiScanActivityResultLauncher.launch(intent);
+            }
+        });
+
+        buttonRefresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateListView();
+            }
+        });
+
+        wifiScanActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        updateListView();
+                    }
+                });
 
         updateListView();
         return root;
@@ -106,41 +149,40 @@ public class DevicesFragment extends Fragment {
         binding = null;
     }
 
-    private void updateUiByConnectionWiFi(){
-        ConnectivityManager cm =
-                (ConnectivityManager)getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+    private void updateUiByConnectionWiFi(Boolean isConnectedWifi){
+        try{
+            if(isConnectedWifi){
+                listViewDevices.setVisibility(View.INVISIBLE);
+                textActionHeader.setVisibility(View.INVISIBLE);
+                buttonScanNetwork.setVisibility(View.INVISIBLE);
+                textScanWifi.setVisibility(View.INVISIBLE);
+                buttonScannerWifi.setVisibility(View.INVISIBLE);
+                textWarningNoWifi.setVisibility(View.VISIBLE);
+                buttonRefresh.setVisibility(View.VISIBLE);
+            }
+            else{
+                listViewDevices.setVisibility(View.VISIBLE);
+                textActionHeader.setVisibility(View.VISIBLE);
+                buttonScanNetwork.setVisibility(View.VISIBLE);
+                textScanWifi.setVisibility(View.VISIBLE);
+                buttonScannerWifi.setVisibility(View.VISIBLE);
+                textWarningNoWifi.setVisibility(View.INVISIBLE);
+                buttonRefresh.setVisibility(View.INVISIBLE);
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
-        if(!isConnected || !isWiFi){
-            TextView warningNoWifi = binding.warningNoWifi;
-            ListView listViewDevices = binding.listViewDevices;
-            TextView textTest = binding.textTest;
-            Button buttonScanNetwork = binding.buttonScanNetwork;
-            TextView textView2 = binding.textView2;
-            Button buttonScannerWifi = binding.buttonScannerWifi;
-            listViewDevices.setVisibility(View.INVISIBLE);
-            textTest.setVisibility(View.INVISIBLE);
-            buttonScanNetwork.setVisibility(View.INVISIBLE);
-            textView2.setVisibility(View.INVISIBLE);
-            buttonScannerWifi.setVisibility(View.INVISIBLE);
-            warningNoWifi.setVisibility(View.VISIBLE);
-        }
-        else{
-            TextView warningNoWifi = binding.warningNoWifi;
-            ListView listViewDevices = binding.listViewDevices;
-            TextView textTest = binding.textTest;
-            Button buttonScanNetwork = binding.buttonScanNetwork;
-            TextView textView2 = binding.textView2;
-            Button buttonScannerWifi = binding.buttonScannerWifi;
-            listViewDevices.setVisibility(View.VISIBLE);
-            textTest.setVisibility(View.VISIBLE);
-            buttonScanNetwork.setVisibility(View.VISIBLE);
-            textView2.setVisibility(View.VISIBLE);
-            buttonScannerWifi.setVisibility(View.VISIBLE);
-            warningNoWifi.setVisibility(View.INVISIBLE);
-        }
+    private boolean isConnectedWifi() {
+        ConnectivityManager cm =
+                (ConnectivityManager)fragmentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnectedWifi =
+                (activeNetwork != null && activeNetwork.isConnectedOrConnecting())
+                && (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI);
+        return isConnectedWifi;
     }
 
     private void validatingZarusDevice(List<Device> devicesFound){
@@ -173,7 +215,7 @@ public class DevicesFragment extends Fragment {
         fragmentActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                updateUiByConnectionWiFi();
+                updateUiByConnectionWiFi(isConnectedWifi());
                 ListView listView = DevicesFragment.binding.getRoot().findViewById(R.id.listViewDevices);
 
                 DiscoveredListViewItemAdapter discoveredListViewItemAdapter = new DiscoveredListViewItemAdapter(fragmentActivity, iotDeviceDiscoveredList);
@@ -198,38 +240,9 @@ public class DevicesFragment extends Fragment {
                                fragmentActivity.getString(R.string.search_for_network_devices))){
                     devicesViewModel.setActionsText(fragmentActivity.getString(R.string.no_device_found));
                 }
-                setButtonState(!devicesViewModel.isSearching());
+                devicesViewModel.setScanNetworkEnable(!devicesViewModel.isSearching());
             }
         });
     }
 
-    private void setText(String text){
-        if(DevicesFragment.fragmentActivity==null || DevicesFragment.binding==null) return;
-        try{
-            fragmentActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final TextView textView = binding.textTest;
-                    textView.setText(text);
-                }
-            });
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
-    private void setButtonState(boolean state){
-        if(DevicesFragment.fragmentActivity==null || DevicesFragment.binding==null) return;
-        try{
-            fragmentActivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    final Button buttonScanNetwork = binding.buttonScanNetwork;
-                    buttonScanNetwork.setEnabled(state);
-                }
-            });
-        } catch (Exception e){
-            e.printStackTrace();
-        }
-    }
 }

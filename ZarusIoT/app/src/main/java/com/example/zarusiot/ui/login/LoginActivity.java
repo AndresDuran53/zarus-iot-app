@@ -48,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
         final Button loginButton = binding.login;
         final ProgressBar loadingProgressBar = binding.loading;
 
-        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+        /*OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 setResult(Activity.RESULT_OK);
@@ -56,7 +56,7 @@ public class LoginActivity extends AppCompatActivity {
                 finish();
             }
         };
-        getOnBackPressedDispatcher().addCallback(this, callback);
+        getOnBackPressedDispatcher().addCallback(this, callback);*/
 
         loginViewModel.getLoginFormState().observe(this, new Observer<LoginFormState>() {
             @Override
