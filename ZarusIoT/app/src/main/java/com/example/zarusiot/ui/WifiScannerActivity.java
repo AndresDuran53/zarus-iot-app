@@ -77,24 +77,22 @@ public class WifiScannerActivity extends AppCompatActivity {
             }
         });
 
-        networkCallback = new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(@NonNull Network network) {
-                super.onAvailable(network);
-                ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
-                        .bindProcessToNetwork(network);
-            }
-        };
-
         configActivityResultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
                         Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
+                        ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
+                                .bindProcessToNetwork(null);
                         try{
                             final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                            connectivityManager.unregisterNetworkCallback(networkCallback);
+                            connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback() {
+                                @Override
+                                public void onAvailable(@NonNull Network network) {
+                                    super.onAvailable(network);
+                                }
+                            });
                         }
                         catch (Exception e){
                             e.printStackTrace();

@@ -103,13 +103,17 @@ public class DevicesFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         if(isConnectedWifi()){
-                            devicesViewModel.setSearching(true);
-                            devicesViewModel.setScanNetworkEnable(false);
-                            iotDeviceDiscoveredList.clear();
-                            updateListView();
-                            devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
-                            devicesViewModel.setActionsText(getString(R.string.scanning_all_devices));
-                            networkScan.scanNetworkDevices((devicesFound) -> validatingZarusDevice(devicesFound));
+                            try{
+                                devicesViewModel.setSearching(true);
+                                devicesViewModel.setScanNetworkEnable(false);
+                                iotDeviceDiscoveredList.clear();
+                                updateListView();
+                                devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
+                                devicesViewModel.setActionsText(getString(R.string.scanning_all_devices));
+                                networkScan.scanNetworkDevices((devicesFound) -> validatingZarusDevice(devicesFound));
+                            }catch (Exception e){
+                                devicesViewModel.setActionsText("Error: "+e.getMessage());
+                            }
                         } else updateUiByConnectionWiFi(false);
                     }
                 }
