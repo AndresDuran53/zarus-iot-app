@@ -9,7 +9,7 @@
     <string name="add_device">Add device</string>
     <string name="already_added">Already added</string>
     <string name="title_activity_new_device">NewDeviceActivity</string>
-    <string name="search_for_network_devices">Search for network devices</string>
+    <string name="search_for_network_devices">Device already connected to your WiFi?</string>
     <string name="scanning_all_devices">Scanning all devices...</string>
     <string name="looking_zarus_devices">Looking for Zarus devices...</string>
     <string name="no_device_found">No Devices Found.</string>
@@ -24,7 +24,7 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="no_devices_stored">There is no devices addded yet.\nGo to the Devices tab to add devices.</string>
-    <string name="brand_new_textview">Are you connecting to a brand new device? \n Turn on the device and click here to search.</string>
+    <string name="brand_new_textview">Connecting to a brand new device? \n Turn on the device and click here.</string>
     <string name="brand_new_button">Search new device</string>
     <string name="text_config_device">Insert your Wifi Configuration</string>
     <string name="prompt_ssid_wifi">SSID (WiFi Name)</string>
