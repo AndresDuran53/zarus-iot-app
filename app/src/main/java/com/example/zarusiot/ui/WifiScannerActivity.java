@@ -36,6 +36,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.zarusiot.R;
+import com.example.zarusiot.data.IoTDeviceType;
 import com.example.zarusiot.data.model.IotDevice;
 import com.example.zarusiot.data.model.WiFiNetwork;
 
@@ -204,9 +205,14 @@ public class WifiScannerActivity extends AppCompatActivity {
 
     private void showNetworks(List<ScanResult> results) {
 
+        wiFiNetworks.clear();
         for (final ScanResult result : results) {
             if (IotDevice.isValidSSID(result.SSID)) {
-                wiFiNetworks.add(new WiFiNetwork(result.SSID, result.BSSID, result.capabilities));
+                IotDevice iotDeviceAux = IotDevice.fromSSID(result.SSID);
+                WiFiNetwork wiFiNetwork = new WiFiNetwork(result.SSID, result.BSSID, result.capabilities);
+                wiFiNetwork.setNameDevice(iotDeviceAux.getName());
+                wiFiNetwork.setTypeDevice(IoTDeviceType.findByValue(iotDeviceAux.getType()).getName());
+                wiFiNetworks.add(wiFiNetwork);
             }
         }
         if (wiFiNetworks.size() == 0) {

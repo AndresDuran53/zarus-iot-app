@@ -60,6 +60,18 @@ public class IotDevice implements Serializable {
         this.added = added;
     }
 
+    public static IotDevice fromSSID(String ssid){
+        try {
+            String[] deviceSSIDValues = ssid.split("-",0);
+            String nameAux = deviceSSIDValues[2];
+            String typeAux = deviceSSIDValues[0]+"-"+deviceSSIDValues[1];
+            return new IotDevice(nameAux, typeAux, "0.0.0.0");
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static IotDevice fromJson(String json,String ip){
         try {
             String[] deviceSSIDValues = new JSONObject(json)
