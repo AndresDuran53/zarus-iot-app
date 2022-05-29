@@ -27,6 +27,7 @@ public class ConfigurationDeviceActivity extends AppCompatActivity {
         EditText editPass = (EditText) findViewById(R.id.edit_text_password);
         String ssid = editSsid.getText().toString();
         String pass = editPass.getText().toString();
+        if(ssid.isEmpty() || pass.isEmpty()) return;
         String message = getString(R.string.sending_configuration);
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
         httpRequest.sendDeviceWiFiConfiguration(IP_LOCAL,ssid,pass,
