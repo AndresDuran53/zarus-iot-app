@@ -198,9 +198,11 @@ public class DevicesFragment extends Fragment {
         ConnectivityManager cm =
                 (ConnectivityManager)fragmentActivity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-        return isConnected && isWiFi;
+        if(activeNetwork != null && activeNetwork.isConnectedOrConnecting()){
+            if(activeNetwork.getType() == ConnectivityManager.TYPE_WIFI)
+                return true;
+        }
+        return false;
     }
 
     private void validatingZarusDevice(List<Device> devicesFound){

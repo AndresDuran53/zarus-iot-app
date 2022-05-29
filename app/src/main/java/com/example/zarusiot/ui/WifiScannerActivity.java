@@ -1,6 +1,7 @@
 package com.example.zarusiot.ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -90,7 +91,12 @@ public class WifiScannerActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
-                        networkCallbackRemoveConnection();
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                            networkCallbackRemoveConnection();
+                        }
+                        else{
+                            disconnectWiFiManager();
+                        }
                     }
                 });
     }
@@ -110,6 +116,11 @@ public class WifiScannerActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        finish();
+    }
+
+    private void disconnectWiFiManager(){
+        wifiManager.disconnect();
         finish();
     }
 
@@ -246,6 +257,8 @@ public class WifiScannerActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             configureNetworkSpecifierQ(networkSSID);
         } else {
+            messageTexView.setText(R.string.trying_to_connect);
+            listWifi.setVisibility(View.INVISIBLE);
             WifiConfiguration wifiConfig = new WifiConfiguration();
             wifiConfig.SSID = "\"" + networkSSID + "\"";
             String configPass = "\"" + DEVICE_PASSWORD + "\"";
@@ -269,8 +282,6 @@ public class WifiScannerActivity extends AppCompatActivity {
                 return;
             }
 
-            messageTexView.setText(R.string.trying_to_connect);
-
             wifiManager.addNetwork(wifiConfig);
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
             for (WifiConfiguration config : list) {
@@ -285,11 +296,11 @@ public class WifiScannerActivity extends AppCompatActivity {
             try {
                 int counter = 0;
                 int secondsToWait = 15;
-                while(!isConnectedWifi() && counter<secondsToWait*10){
+                while(!isConnectedWifi(networkSSID) && counter<secondsToWait*10){
                     Thread.sleep(100);
                     counter++;
                 }
-                if(isConnectedWifi()){
+                if(isConnectedWifi(networkSSID)){
                     Toast.makeText(this, "addNetwork passed", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
                     configActivityResultLauncher.launch(intent);
@@ -298,22 +309,25 @@ public class WifiScannerActivity extends AppCompatActivity {
                     textViewUnableConnection.setVisibility(View.VISIBLE);
                 }
                 messageTexView.setText("");
+                listWifi.setVisibility(View.VISIBLE);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private boolean isConnectedWifi() {
-        ConnectivityManager cm =
-                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
-        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
-        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
-        System.out.print("isConnected: ");
-        System.out.println(isConnected);
-        System.out.print("isWiFi: ");
-        System.out.println(isWiFi);
-        return isConnected && isWiFi;
+    @SuppressLint("MissingPermission")
+    private boolean isConnectedWifi(String networkSSID) {
+        System.out.print("getWifiState: ");
+        System.out.println(wifiManager.getWifiState());
+         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        for (WifiConfiguration config : list) {
+            if (config.SSID != null
+                    && config.SSID.equals("\"" + networkSSID + "\"")
+                    && config.status == WifiConfiguration.Status.CURRENT) {
+                return true;
+            }
+        }
+        return false;
     }
 }
