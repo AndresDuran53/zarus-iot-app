@@ -1,6 +1,8 @@
 package com.example.zarusiot.ui.home;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,11 +22,18 @@ import com.example.zarusiot.data.model.IotDevice;
 import com.example.zarusiot.databinding.FragmentHomeBinding;
 import com.example.zarusiot.ui.ListViewItemAdapter;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+    private final String DEVICES_STORED_FILENAME = "devices_stored.data";
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
 
@@ -42,12 +51,11 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        updateListView(new ArrayList<>());
+        updateListView(homeViewModel.getStoredIotDeviceList().getValue());
         return root;
     }
 
     private void updateListView(List<IotDevice> iotDevices){
-
         ListView listView = binding.getRoot().findViewById(R.id.listView);
 
         TextView noDevicesText = binding.getRoot().findViewById(R.id.noDevicesTextView);
@@ -55,6 +63,7 @@ public class HomeFragment extends Fragment {
             noDevicesText.setVisibility(View.VISIBLE);
         } else noDevicesText.setVisibility(View.INVISIBLE);
 
+        writeData(iotDevices);
         ListViewItemAdapter listViewItemAdapter = new ListViewItemAdapter(requireActivity(),iotDevices);
         listView.setAdapter(listViewItemAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -66,6 +75,39 @@ public class HomeFragment extends Fragment {
                 startActivity(intent);
             }
         });
+    }
+
+    private void readData()
+    {
+        try
+        {
+            FileInputStream fis = new FileInputStream(DEVICES_STORED_FILENAME);
+            ObjectInputStream ois = new ObjectInputStream(fis);
+            List<IotDevice> valueStored = (List<IotDevice>) ois.readObject();
+            homeViewModel.setStoredIotDeviceList(valueStored);
+            ois.close();
+        }
+        catch (IOException | ClassNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void writeData(List<IotDevice> deviceToStore)
+    {
+        try
+        {
+            ObjectOutputStream oos;
+            try (FileOutputStream fos = new FileOutputStream(DEVICES_STORED_FILENAME,false)) {
+                oos = new ObjectOutputStream(fos);
+            }
+            oos.writeObject(deviceToStore);
+            oos.close();
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
