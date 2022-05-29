@@ -2,7 +2,6 @@ package com.example.zarusiot.ui.home;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,7 +22,6 @@ import com.example.zarusiot.databinding.FragmentHomeBinding;
 import com.example.zarusiot.ui.ListViewItemAdapter;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -51,61 +49,61 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        if (homeViewModel.getStoredIotDeviceList().getValue().size() == 0) {
+            List<IotDevice> iotDevicesStoredInternally = readData();
+            if (iotDevicesStoredInternally != null)
+                homeViewModel.setStoredIotDeviceList(iotDevicesStoredInternally);
+        }
+
         updateListView(homeViewModel.getStoredIotDeviceList().getValue());
         return root;
     }
 
-    private void updateListView(List<IotDevice> iotDevices){
+    private void updateListView(List<IotDevice> iotDevices) {
         ListView listView = binding.getRoot().findViewById(R.id.listView);
 
         TextView noDevicesText = binding.getRoot().findViewById(R.id.noDevicesTextView);
-        if(iotDevices.size()==0){
+        if (iotDevices.size() == 0) {
             noDevicesText.setVisibility(View.VISIBLE);
         } else noDevicesText.setVisibility(View.INVISIBLE);
 
         writeData(iotDevices);
-        ListViewItemAdapter listViewItemAdapter = new ListViewItemAdapter(requireActivity(),iotDevices);
+        ListViewItemAdapter listViewItemAdapter = new ListViewItemAdapter(requireActivity(), iotDevices);
         listView.setAdapter(listViewItemAdapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 String deviceIp = iotDevices.get(position).getIp();
-                Uri uri = Uri.parse("http://"+deviceIp);
+                Uri uri = Uri.parse("http://" + deviceIp);
                 Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(intent);
             }
         });
     }
 
-    private void readData()
-    {
-        try
-        {
-            FileInputStream fis = new FileInputStream(DEVICES_STORED_FILENAME);
+    private List<IotDevice> readData() {
+        List<IotDevice> valueStored = new ArrayList<>();
+        try {
+            FileInputStream fis = getActivity().openFileInput(DEVICES_STORED_FILENAME);
             ObjectInputStream ois = new ObjectInputStream(fis);
-            List<IotDevice> valueStored = (List<IotDevice>) ois.readObject();
-            homeViewModel.setStoredIotDeviceList(valueStored);
+            valueStored = (List<IotDevice>) ois.readObject();
             ois.close();
-        }
-        catch (IOException | ClassNotFoundException e)
-        {
+            fis.close();
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+        return valueStored;
     }
 
-    private void writeData(List<IotDevice> deviceToStore)
-    {
-        try
-        {
+    private void writeData(List<IotDevice> deviceToStore) {
+        try {
             ObjectOutputStream oos;
-            try (FileOutputStream fos = new FileOutputStream(DEVICES_STORED_FILENAME,false)) {
-                oos = new ObjectOutputStream(fos);
-            }
+            FileOutputStream fos = getActivity().openFileOutput(DEVICES_STORED_FILENAME, Context.MODE_PRIVATE);
+            oos = new ObjectOutputStream(fos);
             oos.writeObject(deviceToStore);
             oos.close();
-        }
-        catch (IOException e)
-        {
+            fos.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

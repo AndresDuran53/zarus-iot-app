@@ -5,9 +5,10 @@ import com.example.zarusiot.data.IoTDeviceType;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class IotDevice {
+public class IotDevice implements Serializable {
     String name = "Unknown";
     String type = "Unknown";
     String ip = "Unknown";
