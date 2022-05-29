@@ -29,6 +29,7 @@ import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -42,6 +43,7 @@ import java.util.List;
 public class WifiScannerActivity extends AppCompatActivity {
 
     private static final String LOG_TAG = "AndroidExample";
+    private static final String DEVICE_PASSWORD = "password123";
     private static final int MY_REQUEST_CODE = 123;
     private WifiManager wifiManager;
     private WifiBroadcastReceiver wifiReceiver;
@@ -49,7 +51,6 @@ public class WifiScannerActivity extends AppCompatActivity {
     private TextView messageTexView;
     private ListView listWifi;
     private ConnectivityManager connectivityManager;
-    private ConnectivityManager.NetworkCallback networkCallback;
     private List<WiFiNetwork> wiFiNetworks = new ArrayList<>();
     private ActivityResultLauncher<Intent> configActivityResultLauncher;
 
@@ -58,15 +59,17 @@ public class WifiScannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_wifi_scanner);
 
-        this.wifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        // Instantiate broadcast receiver
-        this.wifiReceiver = new WifiBroadcastReceiver();
+        wifiManager = (WifiManager) this.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+        wifiReceiver = new WifiBroadcastReceiver();
         // Register the receiver
         registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
+
+        //UI Bindings
         listWifi = findViewById(R.id.listViewWifi);
         buttonScan = findViewById(R.id.buttonWiFiScan);
         messageTexView = findViewById(R.id.textViewWiFiScanner);
         messageTexView.setText("Press the button to find you new device.");
+
         buttonScan.setEnabled(true);
         this.buttonScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,32 +85,36 @@ public class WifiScannerActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
-                        Toast.makeText(getApplicationContext(), "Device configured", Toast.LENGTH_LONG).show();
-                        ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
-                                .bindProcessToNetwork(null);
-                        try{
-                            final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-                            connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback() {
-                                @Override
-                                public void onAvailable(@NonNull Network network) {
-                                    super.onAvailable(network);
-                                }
-                            });
-                        }
-                        catch (Exception e){
-                            e.printStackTrace();
-                        }
-                        finish();
+                        networkCallbackRemoveConnection();
                     }
                 });
     }
 
+    private void networkCallbackRemoveConnection() {
+        Toast.makeText(getApplicationContext(), getString(R.string.devices_configured), Toast.LENGTH_LONG).show();
+        ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
+                .bindProcessToNetwork(null);
+        try {
+            final ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            connectivityManager.unregisterNetworkCallback(new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    super.onAvailable(network);
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        finish();
+    }
+
 
     private void requestsWifiPermission() {
-        int permission1 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        int permissionAccessLocation =
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
 
         // Check for permissions
-        if (permission1 != PackageManager.PERMISSION_GRANTED) {
+        if (permissionAccessLocation != PackageManager.PERMISSION_GRANTED) {
 
             Log.d(LOG_TAG, "Requesting Permissions");
 
@@ -136,12 +143,9 @@ public class WifiScannerActivity extends AppCompatActivity {
 
         switch (requestCode) {
             case MY_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
                     Log.d(LOG_TAG, "Permission Granted: " + permissions[0]);
-
-                    // Start Scan Wifi.
                     this.doStartScanWifi();
                 } else {
                     // Permission denied, boo! Disable the
@@ -150,16 +154,14 @@ public class WifiScannerActivity extends AppCompatActivity {
                 }
                 break;
             }
-            // Other 'case' lines to check for other
-            // permissions this app might request.
         }
     }
 
     @Override
     protected void onStop() {
-        try{
+        try {
             unregisterReceiver(this.wifiReceiver);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.onStop();
@@ -170,18 +172,13 @@ public class WifiScannerActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "onReceive()");
+            Toast.makeText(context, getText(R.string.scan_complete), Toast.LENGTH_SHORT).show();
 
-            Toast.makeText(context, "Scan Complete!", Toast.LENGTH_SHORT).show();
+            boolean scanSuccess = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
 
-            boolean ok = intent.getBooleanExtra(WifiManager.EXTRA_RESULTS_UPDATED, false);
-
-            if (ok) {
+            if (scanSuccess) {
                 Log.d(LOG_TAG, "Scan OK");
-
-                List<ScanResult> list = wifiManager.getScanResults();
-
-                WifiScannerActivity.this.showNetworks(list);
-                //WifiScannerActivity.this.showNetworksDetails(list);
+                WifiScannerActivity.this.showNetworks(wifiManager.getScanResults());
             } else {
                 Log.d(LOG_TAG, "Scan not OK");
             }
@@ -192,66 +189,71 @@ public class WifiScannerActivity extends AppCompatActivity {
     private void showNetworks(List<ScanResult> results) {
 
         for (final ScanResult result : results) {
-            wiFiNetworks.add(new WiFiNetwork(result.SSID,result.BSSID,result.capabilities));
+            wiFiNetworks.add(new WiFiNetwork(result.SSID, result.BSSID, result.capabilities));
         }
 
         buttonScan.setEnabled(true);
         messageTexView.setText("");
-        ListViewWiFiItemAdapter listViewItemAdapter = new ListViewWiFiItemAdapter(this,wiFiNetworks);
+        ListViewWiFiItemAdapter listViewItemAdapter = new ListViewWiFiItemAdapter(this, wiFiNetworks);
         listWifi.setAdapter(listViewItemAdapter);
         listWifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 connectToNetwork(wiFiNetworks.get(position).getCapabilities(),
-                                wiFiNetworks.get(position).getSsid());
+                        wiFiNetworks.get(position).getSsid());
             }
         });
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
+    private void configureNetworkSpecifierQ(String networkSSID) {
+        WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
+        builder.setSsid(networkSSID);
+        builder.setWpa2Passphrase(DEVICE_PASSWORD);
+
+        WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
+        NetworkRequest.Builder networkRequestBuilder = new NetworkRequest.Builder();
+        networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
+        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
+        networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_TRUSTED);
+        networkRequestBuilder.removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
+        networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier);
+        NetworkRequest networkRequest = networkRequestBuilder.build();
+        connectivityManager = (ConnectivityManager) getBaseContext().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager != null) {
+            connectivityManager.requestNetwork(networkRequest, new ConnectivityManager.NetworkCallback() {
+                @Override
+                public void onAvailable(@NonNull Network network) {
+                    super.onAvailable(network);
+                    ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
+                            .bindProcessToNetwork(network);
+                    Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
+                    configActivityResultLauncher.launch(intent);
+                }
+            });
+        }
+    }
+
     private void connectToNetwork(String networkCapabilities, String networkSSID) {
-        Toast.makeText(this, "Connecting to network: " + networkSSID, Toast.LENGTH_SHORT).show();
+        String message = getText(R.string.connecting_to_network) + " " + networkSSID;
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
 
-        String networkPass = "password123";
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            WifiNetworkSpecifier.Builder builder = new WifiNetworkSpecifier.Builder();
-            builder.setSsid(networkSSID);
-            builder.setWpa2Passphrase(networkPass);
-
-            WifiNetworkSpecifier wifiNetworkSpecifier = builder.build();
-            NetworkRequest.Builder networkRequestBuilder = new NetworkRequest.Builder();
-            networkRequestBuilder.addTransportType(NetworkCapabilities.TRANSPORT_WIFI);
-            networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED);
-            networkRequestBuilder.addCapability(NetworkCapabilities.NET_CAPABILITY_TRUSTED);
-            networkRequestBuilder.removeCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-            networkRequestBuilder.setNetworkSpecifier(wifiNetworkSpecifier);
-            NetworkRequest networkRequest = networkRequestBuilder.build();
-            connectivityManager = (ConnectivityManager) getBaseContext().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (connectivityManager != null) {
-                connectivityManager.requestNetwork(networkRequest, new ConnectivityManager.NetworkCallback() {
-                    @Override
-                    public void onAvailable(@NonNull Network network) {
-                        super.onAvailable(network);
-                        ((ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE))
-                                .bindProcessToNetwork(network);
-                        Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
-                        configActivityResultLauncher.launch(intent);
-                    }
-                });
-            }
-        }else{
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            configureNetworkSpecifierQ(networkSSID);
+        } else {
             WifiConfiguration wifiConfig = new WifiConfiguration();
             wifiConfig.SSID = "\"" + networkSSID + "\"";
+            String configPass = "\"" + DEVICE_PASSWORD + "\"";
 
             if (networkCapabilities.toUpperCase().contains("WEP")) { // WEP Network.
                 //Toast.makeText(this, "WEP Network", Toast.LENGTH_SHORT).show();
-                wifiConfig.wepKeys[0] = "\"" + networkPass + "\"";
+                wifiConfig.wepKeys[0] = configPass;
                 wifiConfig.wepTxKeyIndex = 0;
                 wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
                 wifiConfig.allowedGroupCiphers.set(WifiConfiguration.GroupCipher.WEP40);
             } else if (networkCapabilities.toUpperCase().contains("WPA")) { // WPA Network
                 //Toast.makeText(this, "WPA Network", Toast.LENGTH_SHORT).show();
-                wifiConfig.preSharedKey = "\"" + networkPass + "\"";
+                wifiConfig.preSharedKey = configPass;
             } else { // OPEN Network.
                 //Toast.makeText(this, "OPEN Network", Toast.LENGTH_SHORT).show();
                 wifiConfig.allowedKeyManagement.set(WifiConfiguration.KeyMgmt.NONE);
@@ -261,14 +263,14 @@ public class WifiScannerActivity extends AppCompatActivity {
                 return;
             }
 
-            this.wifiManager.addNetwork(wifiConfig);
+            wifiManager.addNetwork(wifiConfig);
 
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
-            for( WifiConfiguration config : list ) {
-                if(config.SSID != null && config.SSID.equals("\"" + networkSSID + "\"")) {
-                    this.wifiManager.disconnect();
-                    this. wifiManager.enableNetwork(config.networkId, true);
-                    this.wifiManager.reconnect();
+            for (WifiConfiguration config : list) {
+                if (config.SSID != null && config.SSID.equals("\"" + networkSSID + "\"")) {
+                    wifiManager.disconnect();
+                    wifiManager.enableNetwork(config.networkId, true);
+                    wifiManager.reconnect();
                     break;
                 }
             }

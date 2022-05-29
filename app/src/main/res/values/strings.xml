@@ -35,6 +35,9 @@
     <string name="prompt_login">Login</string>
     <string name="sending_configuration">Sending Configuration...</string>
     <string name="devices_found">Devices found.</string>
+    <string name="devices_configured">Device configured</string>
+    <string name="scan_complete">Scan Complete!</string>
+    <string name="connecting_to_network">Connecting to network: </string>
 
 
 </resources>
