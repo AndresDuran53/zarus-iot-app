@@ -1,5 +1,7 @@
 package com.example.zarusiot.data.model;
 
+import com.example.zarusiot.data.IoTDeviceType;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -113,6 +115,17 @@ public class IotDevice {
             return false;
         }
     }
+
+    public static boolean isValidSSID(String deviceSSID){
+        String[] deviceSSIDValues = deviceSSID.split("-",0);
+        if(deviceSSIDValues.length>=3){
+            String typeAux = deviceSSIDValues[0]+"-"+deviceSSIDValues[1];
+            IoTDeviceType typeFound = IoTDeviceType.findByValue(typeAux);
+            if(!typeFound.equals(IoTDeviceType.UNKNOWN)) return true;
+        }
+        return false;
+    }
+
 
 }
 

@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -18,7 +17,6 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSpecifier;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -38,6 +36,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.zarusiot.R;
+import com.example.zarusiot.data.model.IotDevice;
 import com.example.zarusiot.data.model.WiFiNetwork;
 
 import java.util.ArrayList;
@@ -73,15 +72,17 @@ public class WifiScannerActivity extends AppCompatActivity {
         buttonScan = findViewById(R.id.buttonWiFiScan);
         messageTexView = findViewById(R.id.textViewWiFiScanner);
         textViewUnableConnection = findViewById(R.id.textViewUnableConnection);
-        messageTexView.setText("Press the button to find you new device.");
+        messageTexView.setText(R.string.press_button_find_new_device);
 
 
         buttonScan.setEnabled(true);
         this.buttonScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                messageTexView.setText("Searching Device Networks...");
+                messageTexView.setText(R.string.searching_device_networks);
                 buttonScan.setEnabled(false);
+                wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+                registerReceiver(wifiReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
                 requestsWifiPermission();
             }
         });
@@ -91,10 +92,9 @@ public class WifiScannerActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                             networkCallbackRemoveConnection();
-                        }
-                        else{
+                        } else {
                             disconnectWiFiManager();
                         }
                     }
@@ -119,7 +119,7 @@ public class WifiScannerActivity extends AppCompatActivity {
         finish();
     }
 
-    private void disconnectWiFiManager(){
+    private void disconnectWiFiManager() {
         wifiManager.disconnect();
         finish();
     }
@@ -205,11 +205,17 @@ public class WifiScannerActivity extends AppCompatActivity {
     private void showNetworks(List<ScanResult> results) {
 
         for (final ScanResult result : results) {
-            wiFiNetworks.add(new WiFiNetwork(result.SSID, result.BSSID, result.capabilities));
+            if (IotDevice.isValidSSID(result.SSID)) {
+                wiFiNetworks.add(new WiFiNetwork(result.SSID, result.BSSID, result.capabilities));
+            }
         }
-
+        if (wiFiNetworks.size() == 0) {
+            messageTexView.setText(R.string.no_device_found);
+        }
+        else {
+            messageTexView.setText("");
+        }
         buttonScan.setEnabled(true);
-        messageTexView.setText("");
         ListViewWiFiItemAdapter listViewItemAdapter = new ListViewWiFiItemAdapter(this, wiFiNetworks);
         listWifi.setAdapter(listViewItemAdapter);
         listWifi.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -296,16 +302,15 @@ public class WifiScannerActivity extends AppCompatActivity {
             try {
                 int counter = 0;
                 int secondsToWait = 15;
-                while(!isConnectedWifi(networkSSID) && counter<secondsToWait*10){
+                while (!isConnectedWifi(networkSSID) && counter < secondsToWait * 10) {
                     Thread.sleep(100);
                     counter++;
                 }
-                if(isConnectedWifi(networkSSID)){
+                if (isConnectedWifi(networkSSID)) {
                     Toast.makeText(this, "addNetwork passed", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
                     configActivityResultLauncher.launch(intent);
-                }
-                else{
+                } else {
                     textViewUnableConnection.setVisibility(View.VISIBLE);
                 }
                 messageTexView.setText("");
@@ -320,7 +325,7 @@ public class WifiScannerActivity extends AppCompatActivity {
     private boolean isConnectedWifi(String networkSSID) {
         System.out.print("getWifiState: ");
         System.out.println(wifiManager.getWifiState());
-         List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
+        List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
         for (WifiConfiguration config : list) {
             if (config.SSID != null
                     && config.SSID.equals("\"" + networkSSID + "\"")
