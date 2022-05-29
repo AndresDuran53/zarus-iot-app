@@ -269,6 +269,8 @@ public class WifiScannerActivity extends AppCompatActivity {
                 return;
             }
 
+            messageTexView.setText(R.string.trying_to_connect);
+
             wifiManager.addNetwork(wifiConfig);
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
             for (WifiConfiguration config : list) {
@@ -283,16 +285,19 @@ public class WifiScannerActivity extends AppCompatActivity {
             try {
                 int counter = 0;
                 int secondsToWait = 15;
-                while(!isConnectedWifi() && counter<secondsToWait*1000){
+                while(!isConnectedWifi() && counter<secondsToWait*10){
                     Thread.sleep(100);
                     counter++;
                 }
                 if(isConnectedWifi()){
                     Toast.makeText(this, "addNetwork passed", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), ConfigurationDeviceActivity.class);
+                    configActivityResultLauncher.launch(intent);
                 }
                 else{
                     textViewUnableConnection.setVisibility(View.VISIBLE);
                 }
+                messageTexView.setText("");
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
