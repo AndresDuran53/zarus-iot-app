@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiConfiguration;
@@ -16,6 +17,7 @@ import android.net.wifi.WifiManager;
 import android.net.wifi.WifiNetworkSpecifier;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -50,6 +52,7 @@ public class WifiScannerActivity extends AppCompatActivity {
     private Button buttonScan;
     private TextView messageTexView;
     private ListView listWifi;
+    private TextView textViewUnableConnection;
     private ConnectivityManager connectivityManager;
     private List<WiFiNetwork> wiFiNetworks = new ArrayList<>();
     private ActivityResultLauncher<Intent> configActivityResultLauncher;
@@ -68,7 +71,9 @@ public class WifiScannerActivity extends AppCompatActivity {
         listWifi = findViewById(R.id.listViewWifi);
         buttonScan = findViewById(R.id.buttonWiFiScan);
         messageTexView = findViewById(R.id.textViewWiFiScanner);
+        textViewUnableConnection = findViewById(R.id.textViewUnableConnection);
         messageTexView.setText("Press the button to find you new device.");
+
 
         buttonScan.setEnabled(true);
         this.buttonScan.setOnClickListener(new View.OnClickListener() {
@@ -260,11 +265,11 @@ public class WifiScannerActivity extends AppCompatActivity {
             }
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "checkSelfPermission Success", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             wifiManager.addNetwork(wifiConfig);
-
             List<WifiConfiguration> list = wifiManager.getConfiguredNetworks();
             for (WifiConfiguration config : list) {
                 if (config.SSID != null && config.SSID.equals("\"" + networkSSID + "\"")) {
@@ -274,6 +279,36 @@ public class WifiScannerActivity extends AppCompatActivity {
                     break;
                 }
             }
+
+            try {
+                int counter = 0;
+                int secondsToWait = 15;
+                while(!isConnectedWifi() && counter<secondsToWait*1000){
+                    Thread.sleep(100);
+                    counter++;
+                }
+                if(isConnectedWifi()){
+                    Toast.makeText(this, "addNetwork passed", Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    textViewUnableConnection.setVisibility(View.VISIBLE);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private boolean isConnectedWifi() {
+        ConnectivityManager cm =
+                (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        boolean isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        boolean isWiFi = activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+        System.out.print("isConnected: ");
+        System.out.println(isConnected);
+        System.out.print("isWiFi: ");
+        System.out.println(isWiFi);
+        return isConnected && isWiFi;
     }
 }

@@ -38,6 +38,7 @@
     <string name="devices_configured">Device configured</string>
     <string name="scan_complete">Scan Complete!</string>
     <string name="connecting_to_network">Connecting to network: </string>
+    <string name="unable_to_connect">Unable to connect</string>
 
 
 </resources>
