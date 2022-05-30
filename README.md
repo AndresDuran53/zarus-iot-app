@@ -3,7 +3,6 @@
 The purpose of this application is to facilitate the discovery and connections to the iot devices developed by Zarus and its derived codes.
 
 # TODO
-* Adding Limit to device name
 * Check WiFi AP strength before show in list.
 * Adding confirmation before delete device
 * Adding LogIn functionality
