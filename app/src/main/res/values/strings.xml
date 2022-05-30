@@ -42,8 +42,9 @@
     <string name="trying_to_connect">Trying to connect...</string>
     <string name="searching_device_networks">Searching Device Networks...</string>
     <string name="press_button_find_new_device">Press the button to find you new device.</string>
-
-
+    <string name="status">Status:</string>
+    <string name="online">Online</string>
+    <string name="delete_device">Delete</string>
 
 
 </resources>

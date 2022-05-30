@@ -21,6 +21,9 @@
         android:usesCleartextTraffic="true"
         tools:replace="android:icon, android:theme, android:usesCleartextTraffic">
         <activity
+            android:name=".ui.DeviceInformation"
+            android:exported="false" />
+        <activity
             android:name=".ui.ConfigurationDeviceActivity"
             android:exported="false" />
         <activity

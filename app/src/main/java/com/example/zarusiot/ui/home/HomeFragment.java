@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.zarusiot.R;
 import com.example.zarusiot.data.model.IotDevice;
 import com.example.zarusiot.databinding.FragmentHomeBinding;
+import com.example.zarusiot.ui.DeviceInformation;
 import com.example.zarusiot.ui.ListViewItemAdapter;
 
 import java.io.FileInputStream;
@@ -32,6 +33,7 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private final String DEVICES_STORED_FILENAME = "devices_stored.data";
+    private final String IOT_DEVICE_INFORMATION = "IOT_DEVICE_INFORMATION";
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
 
@@ -73,9 +75,8 @@ public class HomeFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                String deviceIp = iotDevices.get(position).getIp();
-                Uri uri = Uri.parse("http://" + deviceIp);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                Intent intent = new Intent(getContext(), DeviceInformation.class);
+                intent.putExtra(IOT_DEVICE_INFORMATION,iotDevices.get(position));
                 startActivity(intent);
             }
         });
