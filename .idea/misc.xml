@@ -36,7 +36,7 @@
         <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.37135416666666665" />
         <entry key="app/src/main/res/layout/activity_configuration_device.xml" value="0.19739583333333333" />
         <entry key="app/src/main/res/layout/activity_device.xml" value="0.35520833333333335" />
-        <entry key="app/src/main/res/layout/activity_device_information.xml" value="0.35520833333333335" />
+        <entry key="app/src/main/res/layout/activity_device_information.xml" value="0.75" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/activity_new_device.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_wifi_scanner.xml" value="0.33" />

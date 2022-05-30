@@ -46,7 +46,7 @@ public class DiscoveredListViewItemAdapter extends BaseAdapter {
         TextView subTitle = (TextView) view.findViewById(R.id.discoveredIotSubTitle);
         TextView addText = (TextView) view.findViewById(R.id.discoveredIotAdd);
 
-        title.setText(iotDevice.getName());
+        title.setText(iotDevice.getType() + ": " +iotDevice.getId());
         subTitle.setText(iotDevice.getType()+" | "+iotDevice.getIp());
         if(iotDevice.isAdded()){
             addText.setText(R.string.already_added);

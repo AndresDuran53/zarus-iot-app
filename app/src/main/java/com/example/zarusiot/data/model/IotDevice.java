@@ -143,6 +143,10 @@ public class IotDevice implements Serializable {
         return -1;
     }
 
+    public static int searchIndexByIotDevice(List<IotDevice> iotDeviceList, IotDevice iotDeviceAux){
+        return searchIndexByIdAndIp(iotDeviceList,iotDeviceAux.getId(),iotDeviceAux.getIp());
+    }
+
     public static boolean existsInList(List<IotDevice> iotDeviceList, String id, String ip){
         if(searchIndexByIdAndIp(iotDeviceList,id,ip)>=0) return true;
         else return false;

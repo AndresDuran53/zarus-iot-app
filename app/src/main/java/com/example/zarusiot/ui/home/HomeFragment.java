@@ -74,7 +74,7 @@ public class HomeFragment extends Fragment {
                         if (result.getResultCode() == Activity.RESULT_OK) {
                             applyChangesOnActivityResult(result);
                         }
-
+                        updateListView(homeViewModel.getStoredIotDeviceList().getValue());
                     }
                 });
 
@@ -88,10 +88,11 @@ public class HomeFragment extends Fragment {
         String actionName = intent.getStringExtra(ACTION_NAME);
         if(actionName.equals(EDIT_ACTION_NAME)){
             String deviceActionName = intent.getStringExtra(DEVICE_ACTION_NAME);
-            System.out.println("EDIT DEVICE: "+iotDevice.getId());
-            System.out.println("NEW NAME: "+deviceActionName);
+            int indexDevice = IotDevice.searchIndexByIotDevice(
+                    homeViewModel.getStoredIotDeviceList().getValue(), iotDevice);
+            homeViewModel.getStoredIotDeviceList().getValue().get(indexDevice)
+                    .setName(deviceActionName);
         } else if(actionName.equals(DELETE_ACTION_NAME)){
-            System.out.println("DELETE DEVICE: "+iotDevice.getId());
             removeDeviceFromStorage(iotDevice);
         }
     }

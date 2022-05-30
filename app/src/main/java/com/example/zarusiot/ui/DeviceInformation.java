@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,7 @@ public class DeviceInformation extends AppCompatActivity {
     Button btDeviceControls;
     Button btDeviceEdit;
     Button btDeviceDelete;
+    EditText etDeviceName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class DeviceInformation extends AppCompatActivity {
         btDeviceControls = (Button)findViewById(R.id.buttonDeviceControls);
         btDeviceEdit = (Button)findViewById(R.id.buttonDeviceEdit);
         btDeviceDelete = (Button)findViewById(R.id.buttonDeviceDelete);
+        etDeviceName = (EditText)findViewById(R.id.editTextDeviceName);
     }
 
     private void setUIValuesByDevice(IotDevice iotDevice) {
@@ -63,6 +66,7 @@ public class DeviceInformation extends AppCompatActivity {
         tvDeviceName.setText(iotDevice.getName());
         tvDeviceIp.setText(iotDevice.getIp());
         tvDeviceMac.setText(iotDevice.getMac());
+        etDeviceName.setText(iotDevice.getName());
         if(iotDevice.isLastStatusConnected()) tvDeviceStatus.setText("Online");
         else tvDeviceStatus.setText("Offline");
     }
@@ -80,11 +84,21 @@ public class DeviceInformation extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getApplication(), "Edit Button not enable yet", Toast.LENGTH_SHORT).show();
-                        /*getIntent().putExtra(ACTION_NAME,EDIT_ACTION_NAME);
-                        getIntent().putExtra(DEVICE_ACTION_NAME,"NewName");
-                        setResult(RESULT_OK,getIntent());
-                        finish();*/
+                        if(etDeviceName.getVisibility()==View.INVISIBLE){
+                            etDeviceName.setVisibility(View.VISIBLE);
+                            tvDeviceName.setVisibility(View.INVISIBLE);
+                            btDeviceEdit.setText("Save Device");
+                        }else{
+                            String iotDeviceTypeName = etDeviceName.getText().toString();
+                            tvDeviceName.setText(iotDeviceTypeName);
+                            etDeviceName.setVisibility(View.INVISIBLE);
+                            tvDeviceName.setVisibility(View.VISIBLE);
+                            btDeviceEdit.setText("Edit Device");
+                            getIntent().putExtra(ACTION_NAME,EDIT_ACTION_NAME);
+                            getIntent().putExtra(DEVICE_ACTION_NAME,iotDeviceTypeName);
+                            setResult(RESULT_OK,getIntent());
+                            finish();
+                        }
                     }
                 }
         );
