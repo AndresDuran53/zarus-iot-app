@@ -17,6 +17,10 @@ import com.example.zarusiot.data.model.IotDevice;
 public class DeviceInformation extends AppCompatActivity {
 
     private final String IOT_DEVICE_INFORMATION = "IOT_DEVICE_INFORMATION";
+    private final String ACTION_NAME = "ACTION_NAME";
+    private final String EDIT_ACTION_NAME = "EDIT_ACTION_NAME";
+    private final String DELETE_ACTION_NAME = "DELETE_ACTION_NAME";
+    private final String DEVICE_ACTION_NAME = "DEVICE_ACTION_NAME";
 
     TextView tvDeviceId;
     TextView tvDeviceType;
@@ -76,6 +80,10 @@ public class DeviceInformation extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Toast.makeText(getApplication(), "Edit Button not enable yet", Toast.LENGTH_SHORT).show();
+                        /*getIntent().putExtra(ACTION_NAME,EDIT_ACTION_NAME);
+                        getIntent().putExtra(DEVICE_ACTION_NAME,"NewName");
+                        setResult(RESULT_OK,getIntent());
+                        finish();*/
                     }
                 }
         );
@@ -83,7 +91,10 @@ public class DeviceInformation extends AppCompatActivity {
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(getApplication(), "Delete Button not enable yet", Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getApplication(), "Delete Button not enable yet", Toast.LENGTH_SHORT).show();
+                        getIntent().putExtra(ACTION_NAME,DELETE_ACTION_NAME);
+                        setResult(RESULT_OK,getIntent());
+                        finish();
                     }
                 }
         );

@@ -1,8 +1,8 @@
 package com.example.zarusiot.ui.home;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +11,10 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -34,8 +38,13 @@ public class HomeFragment extends Fragment {
 
     private final String DEVICES_STORED_FILENAME = "devices_stored.data";
     private final String IOT_DEVICE_INFORMATION = "IOT_DEVICE_INFORMATION";
+    private final String ACTION_NAME = "ACTION_NAME";
+    private final String EDIT_ACTION_NAME = "EDIT_ACTION_NAME";
+    private final String DELETE_ACTION_NAME = "DELETE_ACTION_NAME";
+    private final String DEVICE_ACTION_NAME = "DEVICE_ACTION_NAME";
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding binding;
+    private ActivityResultLauncher<Intent> deviceInformationActivityResultLauncher;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -57,8 +66,44 @@ public class HomeFragment extends Fragment {
                 homeViewModel.setStoredIotDeviceList(iotDevicesStoredInternally);
         }
 
+        deviceInformationActivityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == Activity.RESULT_OK) {
+                            applyChangesOnActivityResult(result);
+                        }
+
+                    }
+                });
+
         updateListView(homeViewModel.getStoredIotDeviceList().getValue());
         return root;
+    }
+
+    private void applyChangesOnActivityResult(ActivityResult result) {
+        Intent intent = result.getData();
+        IotDevice iotDevice = (IotDevice) intent.getSerializableExtra(IOT_DEVICE_INFORMATION);
+        String actionName = intent.getStringExtra(ACTION_NAME);
+        if(actionName.equals(EDIT_ACTION_NAME)){
+            String deviceActionName = intent.getStringExtra(DEVICE_ACTION_NAME);
+            System.out.println("EDIT DEVICE: "+iotDevice.getName());
+            System.out.println("NEW NAME: "+deviceActionName);
+        } else if(actionName.equals(DELETE_ACTION_NAME)){
+            System.out.println("DELETE DEVICE: "+iotDevice.getName());
+            removeDeviceFromStorage(iotDevice);
+        }
+    }
+
+    private void removeDeviceFromStorage(IotDevice iotDevice) {
+        List<IotDevice> homeListStoredAux = homeViewModel.getStoredIotDeviceList().getValue();
+        int index = IotDevice.searchIndexByNameAndIp(
+                homeListStoredAux,
+                iotDevice.getName(),
+                iotDevice.getIp());
+        homeListStoredAux.remove(index);
+        homeViewModel.setStoredIotDeviceList(homeListStoredAux);
     }
 
     private void updateListView(List<IotDevice> iotDevices) {
@@ -77,7 +122,8 @@ public class HomeFragment extends Fragment {
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 Intent intent = new Intent(getContext(), DeviceInformation.class);
                 intent.putExtra(IOT_DEVICE_INFORMATION,iotDevices.get(position));
-                startActivity(intent);
+                deviceInformationActivityResultLauncher.launch(intent);
+                //startActivity(intent);
             }
         });
     }

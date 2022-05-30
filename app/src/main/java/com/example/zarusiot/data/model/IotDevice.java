@@ -102,8 +102,16 @@ public class IotDevice implements Serializable {
         return -1;
     }
 
+    public static int searchIndexByNameAndIp(List<IotDevice> iotDeviceList, String name, String ip){
+        for (int i=0; i<iotDeviceList.size(); i++){
+            if(iotDeviceList.get(i).getName().equals(name) && iotDeviceList.get(i).getIp().equals(ip))
+                return i;
+        }
+        return -1;
+    }
+
     public static boolean existsInList(List<IotDevice> iotDeviceList, String name, String ip){
-        if(searchIndexIotDeviceByIp(iotDeviceList,ip)>=0 && searchIndexIotDeviceByName(iotDeviceList,name)>=0) return true;
+        if(searchIndexByNameAndIp(iotDeviceList,name,ip)>=0) return true;
         else return false;
     }
 
