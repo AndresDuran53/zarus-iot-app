@@ -88,19 +88,19 @@ public class HomeFragment extends Fragment {
         String actionName = intent.getStringExtra(ACTION_NAME);
         if(actionName.equals(EDIT_ACTION_NAME)){
             String deviceActionName = intent.getStringExtra(DEVICE_ACTION_NAME);
-            System.out.println("EDIT DEVICE: "+iotDevice.getName());
+            System.out.println("EDIT DEVICE: "+iotDevice.getId());
             System.out.println("NEW NAME: "+deviceActionName);
         } else if(actionName.equals(DELETE_ACTION_NAME)){
-            System.out.println("DELETE DEVICE: "+iotDevice.getName());
+            System.out.println("DELETE DEVICE: "+iotDevice.getId());
             removeDeviceFromStorage(iotDevice);
         }
     }
 
     private void removeDeviceFromStorage(IotDevice iotDevice) {
         List<IotDevice> homeListStoredAux = homeViewModel.getStoredIotDeviceList().getValue();
-        int index = IotDevice.searchIndexByNameAndIp(
+        int index = IotDevice.searchIndexByIdAndIp(
                 homeListStoredAux,
-                iotDevice.getName(),
+                iotDevice.getId(),
                 iotDevice.getIp());
         homeListStoredAux.remove(index);
         homeViewModel.setStoredIotDeviceList(homeListStoredAux);

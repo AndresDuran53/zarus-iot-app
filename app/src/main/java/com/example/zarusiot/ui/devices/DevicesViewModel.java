@@ -59,7 +59,7 @@ public class DevicesViewModel extends ViewModel {
     }
 
     public boolean deviceAlreadyAdded(IotDevice iotDevice){
-        return IotDevice.existsInList((List<IotDevice>)discoveredIotDeviceList.getValue(),iotDevice.getName(),iotDevice.getIp());
+        return IotDevice.existsInList((List<IotDevice>)discoveredIotDeviceList.getValue(),iotDevice.getId(),iotDevice.getIp());
     }
 
     public void addToDiscoveredIotDeviceList(IotDevice iotDevice) {

@@ -27,7 +27,7 @@ public class HomeViewModel extends ViewModel {
     }
 
     public boolean deviceAlreadyAdded(IotDevice iotDevice){
-        return IotDevice.existsInList((List<IotDevice>)storedIotDeviceList.getValue(),iotDevice.getName(),iotDevice.getIp());
+        return IotDevice.existsInList((List<IotDevice>)storedIotDeviceList.getValue(),iotDevice.getId(),iotDevice.getIp());
     }
 
     public void addToIotDeviceList(IotDevice iotDevice) {

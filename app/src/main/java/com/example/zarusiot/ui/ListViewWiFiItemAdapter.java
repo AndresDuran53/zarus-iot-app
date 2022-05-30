@@ -43,7 +43,7 @@ public class ListViewWiFiItemAdapter extends BaseAdapter {
         TextView title = (TextView) view.findViewById(R.id.iotTitle);
         TextView subTitle = (TextView) view.findViewById(R.id.iotSubTitle);
 
-        title.setText(wiFiNetwork.getTypeDevice()+" | "+wiFiNetwork.getNameDevice());
+        title.setText(wiFiNetwork.getNameDevice());
         subTitle.setText(wiFiNetwork.getBssid());
 
         return view;

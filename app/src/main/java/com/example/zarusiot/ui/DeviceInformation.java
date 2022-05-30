@@ -58,12 +58,13 @@ public class DeviceInformation extends AppCompatActivity {
     }
 
     private void setUIValuesByDevice(IotDevice iotDevice) {
-        tvDeviceId.setText(iotDevice.getName());
+        tvDeviceId.setText(iotDevice.getId());
         tvDeviceType.setText(IoTDeviceType.findByValue(iotDevice.getType()).getName());
-        tvDeviceName.setText(iotDevice.getName()+" | "+IoTDeviceType.findByValue(iotDevice.getType()).getName());
-        tvDeviceStatus.setText("Online");
+        tvDeviceName.setText(iotDevice.getName());
         tvDeviceIp.setText(iotDevice.getIp());
-        tvDeviceMac.setText("00:00:5e:00:53:af");
+        tvDeviceMac.setText(iotDevice.getMac());
+        if(iotDevice.isLastStatusConnected()) tvDeviceStatus.setText("Online");
+        else tvDeviceStatus.setText("Offline");
     }
 
     private void setOnClickValuesByDevice(IotDevice iotDevice){

@@ -9,26 +9,50 @@ import java.io.Serializable;
 import java.util.List;
 
 public class IotDevice implements Serializable {
-    String name = "Unknown";
-    String type = "Unknown";
-    String ip = "Unknown";
+    String id = "";
+    String name = "";
+    String type = "";
+    String ip = "";
+    String mac = "";
     boolean added = false;
+    boolean lastStatusConnected = true;
 
     public IotDevice() {
 
     }
 
-    public IotDevice(String ip) {
+    public IotDevice(String id, String type, String ip) {
+        this.id = id;
+        this.name = type + ": " +id;
+        this.type = type;
         this.ip = ip;
     }
 
-    public IotDevice(String name, String type, String ip) {
+    public IotDevice(String id, String name, String type, String ip) {
+        this.id = id;
         this.name = name;
         this.type = type;
         this.ip = ip;
     }
 
+    public IotDevice(String id, String name, String type, String ip, String mac) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.ip = ip;
+        this.mac = mac;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getName() {
+        if(name.isEmpty()) name = type + ": " +id;
         return name;
     }
 
@@ -52,6 +76,14 @@ public class IotDevice implements Serializable {
         this.ip = ip;
     }
 
+    public String getMac() {
+        return mac;
+    }
+
+    public void setMac(String mac) {
+        this.mac = mac;
+    }
+
     public boolean isAdded() {
         return added;
     }
@@ -60,12 +92,20 @@ public class IotDevice implements Serializable {
         this.added = added;
     }
 
+    public boolean isLastStatusConnected() {
+        return lastStatusConnected;
+    }
+
+    public void setLastStatusConnected(boolean lastStatusConnected) {
+        this.lastStatusConnected = lastStatusConnected;
+    }
+
     public static IotDevice fromSSID(String ssid){
         try {
             String[] deviceSSIDValues = ssid.split("-",0);
-            String nameAux = deviceSSIDValues[2];
+            String idAux = deviceSSIDValues[2];
             String typeAux = deviceSSIDValues[0]+"-"+deviceSSIDValues[1];
-            return new IotDevice(nameAux, typeAux, "0.0.0.0");
+            return new IotDevice(idAux, typeAux, "0.0.0.0");
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -77,9 +117,9 @@ public class IotDevice implements Serializable {
             String[] deviceSSIDValues = new JSONObject(json)
                     .getString("deviceSSID")
                     .split("-",0);
-            String nameAux = deviceSSIDValues[2];
+            String idAux = deviceSSIDValues[2];
             String typeAux = deviceSSIDValues[0]+"-"+deviceSSIDValues[1];
-            return new IotDevice(nameAux, typeAux, ip);
+            return new IotDevice(idAux, typeAux, ip);
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (Exception e){
@@ -95,28 +135,21 @@ public class IotDevice implements Serializable {
         return -1;
     }
 
-    public static int searchIndexIotDeviceByName(List<IotDevice> iotDeviceList, String name){
+    public static int searchIndexByIdAndIp(List<IotDevice> iotDeviceList, String id, String ip){
         for (int i=0; i<iotDeviceList.size(); i++){
-            if(iotDeviceList.get(i).getName().equals(name)) return i;
-        }
-        return -1;
-    }
-
-    public static int searchIndexByNameAndIp(List<IotDevice> iotDeviceList, String name, String ip){
-        for (int i=0; i<iotDeviceList.size(); i++){
-            if(iotDeviceList.get(i).getName().equals(name) && iotDeviceList.get(i).getIp().equals(ip))
+            if(iotDeviceList.get(i).getId().equals(id) && iotDeviceList.get(i).getIp().equals(ip))
                 return i;
         }
         return -1;
     }
 
-    public static boolean existsInList(List<IotDevice> iotDeviceList, String name, String ip){
-        if(searchIndexByNameAndIp(iotDeviceList,name,ip)>=0) return true;
+    public static boolean existsInList(List<IotDevice> iotDeviceList, String id, String ip){
+        if(searchIndexByIdAndIp(iotDeviceList,id,ip)>=0) return true;
         else return false;
     }
 
     public static boolean addToListIfNotDuplicated(List<IotDevice> iotDeviceList, IotDevice iotDevice){
-        if(!existsInList(iotDeviceList,iotDevice.getName(),iotDevice.getIp())) {
+        if(!existsInList(iotDeviceList,iotDevice.getId(),iotDevice.getIp())) {
             iotDeviceList.add(iotDevice);
             return true;
         }

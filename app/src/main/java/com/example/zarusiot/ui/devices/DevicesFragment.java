@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -217,7 +218,9 @@ public class DevicesFragment extends Fragment {
 
     private void validatingZarusDevice(List<Device> devicesFound) {
         if (devicesFound.size() != 0) {
-            List<String> listIp = devicesFound.stream().map(device -> device.ip).collect(Collectors.toList());
+            List<Pair<String, String>> listIp = devicesFound.stream()
+                    .map(device -> new Pair<>(device.ip, device.mac))
+                    .collect(Collectors.toList());
             httpRequest.callGetListRequests(listIp,
                     IotDevice::validZarusDeviceResponse,
                     this::saveToIotDevicesList);
@@ -226,18 +229,19 @@ public class DevicesFragment extends Fragment {
         updateUIElementes();
     }
 
-    public void saveToIotDevicesList(String ip, String response) {
-        IotDevice iotDeviceAux = IotDevice.fromJson(response, ip);
+    public void saveToIotDevicesList(Pair<String,String> ipMac, String response) {
+        IotDevice iotDeviceAux = IotDevice.fromJson(response, ipMac.first);
+        iotDeviceAux.setMac(ipMac.second);
         IotDevice.addToListIfNotDuplicated(iotDeviceDiscoveredList, iotDeviceAux);
-        updateAddedStateIfAdded(ip, iotDeviceAux);
+        updateAddedStateIfAdded(iotDeviceAux);
         devicesViewModel.setDiscoveredIotDeviceList(iotDeviceDiscoveredList);
         updateUIElementes();
     }
 
-    private void updateAddedStateIfAdded(String ip, IotDevice iotDeviceAux) {
+    private void updateAddedStateIfAdded(IotDevice iotDeviceAux) {
         boolean deviceAlreadyStored = homeViewModel.deviceAlreadyAdded(iotDeviceAux);
         int deviceDuplicatedIndex =
-                IotDevice.searchIndexIotDeviceByIp(iotDeviceDiscoveredList, ip);
+                IotDevice.searchIndexIotDeviceByIp(iotDeviceDiscoveredList, iotDeviceAux.getIp());
         if (deviceAlreadyStored) {
             iotDeviceDiscoveredList.get(deviceDuplicatedIndex).setAdded(true);
         } else {
@@ -270,7 +274,7 @@ public class DevicesFragment extends Fragment {
 
     private void updateListView() {
         for (IotDevice iotDevice : iotDeviceDiscoveredList) {
-            updateAddedStateIfAdded(iotDevice.getIp(), iotDevice);
+            updateAddedStateIfAdded(iotDevice);
         }
         ListView listView =
                 DevicesFragment.binding.getRoot().findViewById(R.id.listViewDevices);

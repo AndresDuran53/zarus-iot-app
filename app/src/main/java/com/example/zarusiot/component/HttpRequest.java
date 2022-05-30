@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.text.format.Formatter;
+import android.util.Pair;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -26,33 +27,34 @@ public class HttpRequest {
         this.context = context;
     }
 
-    public void callGetListRequests(List<String> listIps,
+    public void callGetListRequests(List<Pair<String, String>> listIps,
                                     Function<String,Boolean> validateResponse,
-                                    BiConsumer<String,String> callback){
+                                    BiConsumer<Pair<String,String>,String> callback){
         // Instantiate the RequestQueue.
+
         RequestQueue queue = Volley.newRequestQueue(context);
         listIps.stream().forEach(ip->{
-            String url ="http://"+ip+"/getRedInformation";
+            String url ="http://"+ip.first+"/getRedInformation";
             addToQueue(ip, validateResponse, callback, queue, url);
         });
     }
 
-    public void sendDeviceWiFiConfiguration(String ip, String ssid, String pass,
+    public void sendDeviceWiFiConfiguration(Pair<String, String> ipMac, String ssid, String pass,
                                 Function<String,Boolean> validateResponse,
-                                BiConsumer<String,String> callback){
+                                BiConsumer<Pair<String,String>,String> callback){
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(context);
-        String url ="http://"+ip+"/setValues?rcsid="+ssid+"&rcpid="+pass;
-        addToQueue(ip, validateResponse, callback, queue, url);
+        String url ="http://"+ipMac.first+"/setValues?rcsid="+ssid+"&rcpid="+pass;
+        addToQueue(ipMac, validateResponse, callback, queue, url);
 
     }
 
-    private void addToQueue(String ip, Function<String, Boolean> validateResponse, BiConsumer<String, String> callback, RequestQueue queue, String url) {
+    private void addToQueue(Pair<String, String> ipMac, Function<String, Boolean> validateResponse, BiConsumer<Pair<String,String>, String> callback, RequestQueue queue, String url) {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if (validateResponse.apply(response)) callback.accept(ip, response);
+                        if (validateResponse.apply(response)) callback.accept(ipMac, response);
                     }
                 }, new Response.ErrorListener() {
             @Override

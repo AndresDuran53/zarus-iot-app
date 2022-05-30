@@ -1,6 +1,7 @@
 package com.example.zarusiot.ui;
 
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -30,7 +31,7 @@ public class ConfigurationDeviceActivity extends AppCompatActivity {
         if(ssid.isEmpty() || pass.isEmpty()) return;
         String message = getString(R.string.sending_configuration);
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-        httpRequest.sendDeviceWiFiConfiguration(IP_LOCAL,ssid,pass,
+        httpRequest.sendDeviceWiFiConfiguration(new Pair<>(IP_LOCAL, ""),ssid,pass,
                 (x)-> true,
                 (ip,response)-> {return;});
         finish();
