@@ -30,18 +30,25 @@
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/menu/bottom_nav_menu.xml" value="0.19739583333333333" />
         <entry key="../../Projects/Git/Andres/zarus-iot-app/ZarusIoT/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.21354166666666666" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.37135416666666665" />
+        <entry key="app/src/main/res/drawable/border_banner.xml" value="0.36564102564102563" />
+        <entry key="app/src/main/res/drawable/border_button.xml" value="0.36564102564102563" />
         <entry key="app/src/main/res/drawable/ic_dashboard_black_24dp.xml" value="0.37135416666666665" />
         <entry key="app/src/main/res/drawable/ic_home_black_24dp.xml" value="0.37135416666666665" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.37135416666666665" />
         <entry key="app/src/main/res/drawable/ic_notifications_black_24dp.xml" value="0.37135416666666665" />
-        <entry key="app/src/main/res/layout/activity_configuration_device.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/drawable/text_button.xml" value="0.36564102564102563" />
+        <entry key="app/src/main/res/layout-w1240dp/activity_login.xml" value="0.12684069611780455" />
+        <entry key="app/src/main/res/layout/activity_configuration_device.xml" value="0.33" />
         <entry key="app/src/main/res/layout/activity_device.xml" value="0.35520833333333335" />
-        <entry key="app/src/main/res/layout/activity_device_information.xml" value="0.75" />
+        <entry key="app/src/main/res/layout/activity_device_information.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_login.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/activity_new_device.xml" value="0.33" />
+        <entry key="app/src/main/res/layout/activity_splash.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/activity_wifi_scanner.xml" value="0.33" />
         <entry key="app/src/main/res/layout/custom_listview_item.xml" value="0.2914529914529915" />
         <entry key="app/src/main/res/layout/custom_textview.xml" value="0.19739583333333333" />
+        <entry key="app/src/main/res/layout/fragment_account.xml" value="0.35520833333333335" />
         <entry key="app/src/main/res/layout/fragment_dashboard.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_devices.xml" value="0.3428442028985507" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.35520833333333335" />

@@ -57,6 +57,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:onClick="sendWiFiConfiguration"
+        android:textColor="@drawable/color_text_button"
+        android:background="@drawable/border_button"
         android:text="@string/prompt_button_send_configuration"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

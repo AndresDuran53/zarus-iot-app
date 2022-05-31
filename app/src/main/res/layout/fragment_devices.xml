@@ -17,7 +17,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <TextView
         android:id="@+id/textViewScanWifi"
@@ -38,7 +39,10 @@
         android:id="@+id/buttonScannerWifi"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
         android:onClick="openWiFiScannerActivity"
+        android:textColor="@drawable/color_text_button"
+        android:background="@drawable/border_button"
         android:text="@string/brand_new_button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,6 +70,9 @@
         android:id="@+id/buttonScanNetwork"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:textColor="@drawable/color_text_button"
+        android:background="@drawable/border_button"
         android:text="@string/scan_Network"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/buttonScannerWifi"
@@ -92,6 +99,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
+        android:textColor="@drawable/color_text_button"
+        android:background="@drawable/border_button"
         android:text="@string/refresh"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
