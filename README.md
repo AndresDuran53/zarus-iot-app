@@ -10,9 +10,9 @@ Zarus IoT Hub is an open source application to facilitate the discovery and conn
  For example to connect and use the [LED RGB Controller](https://github.com/AndresDuran53/zarus-rgb-controller/) with a simple UI.
 
 ## Screenshots
-[<img src="media/Screenshot_home.jpg" alt="Zarus Iot Hub Home" width="300">](media/Screenshot_home.jpg)
-[<img src="media/Screenshot_devices.jpg" alt="Zarus Iot Hub Devices" width="300">](media/Screenshot_devices.jpg)
-[<img src="media/Screenshot_configuration.jpg" alt="Zarus Iot Hub Configuration" width="300">](media/Screenshot_configuration.jpg)
+[<img src="media/Screenshot_home.jpg" alt="Zarus Iot Hub Home" width="250">](media/Screenshot_home.jpg)
+[<img src="media/Screenshot_devices.jpg" alt="Zarus Iot Hub Devices" width="250">](media/Screenshot_devices.jpg)
+[<img src="media/Screenshot_configuration.jpg" alt="Zarus Iot Hub Configuration" width="250">](media/Screenshot_configuration.jpg)
 
 ## Quick Start
 1. Download the Zarus IoT Hub application and open it.
